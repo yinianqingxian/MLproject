@@ -1,0 +1,88 @@
+{
+  "status": "passed",
+  "runs": 15,
+  "feature_prediction_gate_images": 107100,
+  "intervention_images": 151200,
+  "data_fingerprint": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+  "checks": [
+    {
+      "run_id": "mixed_dual_denoised_seed42",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_dual_denoised_seed43",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_dual_denoised_seed44",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_dual_seed42",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_dual_seed43",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_dual_seed44",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "mixed_fixed_seed42",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 0
+    },
+    {
+      "run_id": "mixed_fixed_seed43",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 0
+    },
+    {
+      "run_id": "mixed_fixed_seed44",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 0
+    },
+    {
+      "run_id": "repeat_clean_dual_seed42",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "repeat_clean_dual_seed43",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "repeat_clean_dual_seed44",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "targeted_motion_dual_seed42",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "targeted_motion_dual_seed43",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    },
+    {
+      "run_id": "targeted_motion_dual_seed44",
+      "feature_prediction_gate_images": 7140,
+      "intervention_images": 12600
+    }
+  ],
+  "tolerance": {
+    "rtol": 1e-05,
+    "atol": 2e-06
+  }
+}

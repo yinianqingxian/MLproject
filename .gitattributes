@@ -1,0 +1,4 @@
+# Experiment provenance uses SHA256 of exact bytes, including line endings.
+* -text
+# Matplotlib's SVG exporter leaves spaces in multiline path coordinates.
+*.svg whitespace=-blank-at-eol

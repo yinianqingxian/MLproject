@@ -1,0 +1,167 @@
+{
+  "status": "completed",
+  "scope": "Data/preprocessing audit only; no training or model forward; existing five validation conditions only.",
+  "generated_at_utc": "2026-11-22T08:11:54.731589+00:00",
+  "hash_contract": "SHA256 of complete ordered [N,3,32,32] float32 CPU views in contiguous NCHW C-order bytes; mirrors B check_views(). No use of external pixel_hash().",
+  "environment": {
+    "python": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+    "opencv": "4.10.0",
+    "numpy": "1.26.4",
+    "torch": "2.5.1",
+    "cv2_threads": 1,
+    "torch_threads": 1
+  },
+  "b_environment": {
+    "opencv": "5.1.0",
+    "numpy": "2.4.6",
+    "torch": "2.15.0"
+  },
+  "current_data_fingerprint": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+  "b_data_fingerprint": "4f3a1790496c27108f702365b47a6899f8c52d8d65585c03f986481666684af9",
+  "data_fingerprint_matches_b": false,
+  "current_split_sha256": "de914a9199138474115a14776a61574651653ed87c72a26b9804bb35c5aa5359",
+  "b_split_sha256": "de914a9199138474115a14776a61574651653ed87c72a26b9804bb35c5aa5359",
+  "split_matches_b": true,
+  "b_input_audit_sha256": "905a2ac01ef0970751c5dc84bc3eae41ba2660bfc4d905678ca09c49d0a94899",
+  "b_conditions_manifest_sha256": "c498b92632748591715e3385b16ff6a1c3759810f42d8407fdd84b134e836dfd",
+  "frozen_training_source_fingerprints": {
+    "run_resnet_study.py": "e7cf9f0724db5af3247208e20e95ba36fdbbc0fedbc4ba342284b037f8cb0adc",
+    "resnet_robustness_study.py": "87a029536db1a1f28d89b2a3d864cbf0db9c1acc9a254d44d602766588f38061",
+    "run_c_study.py": "57ef2a702252e404a9aec73bd46d04bc487fd66848015e85f9f59a30f2601ade",
+    "cnn_robustness_study.py": "7b0c17d5cd4da38bc453ff5092aeb0cef1dd149cf9faf83e67aeba30f3f0c36d",
+    "cnn_robustness_pilot.py": "b5a3ed68c118596a744630bde099ba569af1fdba4bb19fd7c660eb41d61bb206"
+  },
+  "frozen_training_source_unchanged": true,
+  "tensor_views_ast_matches_b": true,
+  "conditions": [
+    {
+      "condition": "clean",
+      "severity": "none",
+      "n_images": 840,
+      "views": {
+        "raw": {
+          "current_sha256": "cb6b88b649e052d794a096a3975f874275fb39936168ac3d7aeb3c14147cb67c",
+          "b_mac_sha256": "ba7ca6ae068a356fbd47d65ab2a6ea0f2906d78efd267155a799c213a94f0a68",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "clahe": {
+          "current_sha256": "808eca0e41c87757f63eb886e8f2d656da297124ae1932d2ec0e1f81097799d9",
+          "b_mac_sha256": "46faa7fffc2172a9cb72c5d5777c39af7f6182ddd7fc8a0959bb0cc0097ba7cb",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "denoised_clahe": {
+          "current_sha256": "1db6ad754dd70903a526995788fb84bc7dd0a5ab94ec40efddffe6fce13cece4",
+          "b_mac_sha256": "d87a41ba0430c10c9f721644f49cf84cd787b1f6f3b12ae578feffaeaa15bf72",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        }
+      }
+    },
+    {
+      "condition": "motion",
+      "severity": "medium",
+      "n_images": 840,
+      "views": {
+        "raw": {
+          "current_sha256": "2c6b517f900bef3aeb9fd8ca83477458d2295f76e0577a522d6b0f464f75c0c7",
+          "b_mac_sha256": "6807a3cc1b2731128cacecdb0cd518b1b6d1852d53281894fe1f7cf1904dd9b7",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "clahe": {
+          "current_sha256": "826ab6b847ed70af159d1ebd9f29b4caa2f2c60a86c7ab429212726579dbdac5",
+          "b_mac_sha256": "3c37725e7265db57c80f0c9cf2409d362b44801aedb39f3446e7f2001e956153",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "denoised_clahe": {
+          "current_sha256": "6fe9c6072ae53bde7b961712c19fc55d7d72b640a4a6475e6c88598c02dce508",
+          "b_mac_sha256": "c32e016815ba16a8b90a7893e4691da646be20cbd15f55ea2f357a9a2291c892",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        }
+      }
+    },
+    {
+      "condition": "noise",
+      "severity": "medium",
+      "n_images": 840,
+      "views": {
+        "raw": {
+          "current_sha256": "48947991b95c3986f5b24e5a03debd9d0fcd14d9fd41547df9048528c521b68e",
+          "b_mac_sha256": "89f55584abd9680fee30d9bcc9da1fd58618de22542956873733401eaa08f7b5",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "clahe": {
+          "current_sha256": "d3af6d66226e784ff88703d0ccadc4289e04dc7b5e067c1c96e5c12532041475",
+          "b_mac_sha256": "e40275fa3da2d4819ddb595360f8ecc11ba1ac72686c232c7444709f63acbabb",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "denoised_clahe": {
+          "current_sha256": "b1e6f49d56e512c5ea9d2b0d98f2ce203675aa3e4c37b60f2b90473d81d97fc7",
+          "b_mac_sha256": "b2ded47535fb3456b953cdcc742900c823fb3c3b9dfba48884ff024cf4792934",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        }
+      }
+    },
+    {
+      "condition": "dark",
+      "severity": "medium",
+      "n_images": 840,
+      "views": {
+        "raw": {
+          "current_sha256": "7029b02fefa7b737d1953b796bd97de21be6e3b231a833ab1b48e5c0deeaccbd",
+          "b_mac_sha256": "19b9fe42fbc74c03219119ac3430bd276ab917feb25f19967e7e6f0a46158131",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "clahe": {
+          "current_sha256": "dc1bec67fa6d9927fba7dcc27968ce376ff66a154426bf364a50bf4841293d01",
+          "b_mac_sha256": "3a9d31a652848617e6aeb26d301cc915b01e59c7283ec25cc734ae379d34bf66",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        },
+        "denoised_clahe": {
+          "current_sha256": "aed8a2be1c1f9f76b4ad4c4c0a00127a7b383a6fe4b1a5eb51550df263d98376",
+          "b_mac_sha256": "38ef77e72bb500a1c99c495f77c0d0c7e038808bb01692230f8fce20e622049d",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        }
+      }
+    },
+    {
+      "condition": "jpeg",
+      "severity": "medium",
+      "n_images": 840,
+      "views": {
+        "raw": {
+          "current_sha256": "8c774326fd0fd1ff5bba018a1a2471076c93d675df6ae90b38524e117df17b25",
+          "b_mac_sha256": "8c774326fd0fd1ff5bba018a1a2471076c93d675df6ae90b38524e117df17b25",
+          "matches_b_mac": true,
+          "local_single_fusion_equal": true
+        },
+        "clahe": {
+          "current_sha256": "2e73a5c9a7f9e6bfba34a85ed125ab6bb22f018250506b47298c43871988b805",
+          "b_mac_sha256": "2e73a5c9a7f9e6bfba34a85ed125ab6bb22f018250506b47298c43871988b805",
+          "matches_b_mac": true,
+          "local_single_fusion_equal": true
+        },
+        "denoised_clahe": {
+          "current_sha256": "17b2029709ad41956a32fb239286c2f35049e48f923f121652f8f38c2dbf86ff",
+          "b_mac_sha256": "c713a0610c6f5bb182a5734a19c48b677e233fcfc16aec23fc162d19418bc5dd",
+          "matches_b_mac": false,
+          "local_single_fusion_equal": true
+        }
+      }
+    }
+  ],
+  "matching_condition_view_pairs": 2,
+  "total_condition_view_pairs": 15,
+  "all_local_single_fusion_equal": true,
+  "interpretation": "Identical preprocessing source does not establish identical cross-environment pixels. Require matching condition/view identities before paired model comparisons. This audit does not establish the cause of any mismatch."
+}

@@ -1,0 +1,8 @@
+# These targets are installed ONLY when their import is truly absent.
+# Healthy NVIDIA-provided versions are reused and recorded, including versions
+# outside these fallback bounds. Existing but broken imports fail the build.
+# NVIDIA torch, NumPy and SciPy are inherited and additionally constrained to
+# their captured base versions; do not install the Windows/Linux requirements.
+opencv-python-headless==4.10.0.84
+scikit-learn>=1.5,<1.9
+matplotlib>=3.8,<3.11
