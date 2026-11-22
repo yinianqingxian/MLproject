@@ -1,6 +1,6 @@
 # DS 4023 交通标志鲁棒性研究 — 项目总控
 
-> 更新日期 2026-11-22。历史 SmallCNN C 实验已完成；官方 ResNet18 公共代码与本机短程核验已通过。正在接收 B 的增强视图与单分支材料，并搜索 A 公共评估代码及 C 正式运行产物。
+> 更新日期 2026-11-23。C 的 15 次正式 ResNet18 开发验证已在 Windows NVIDIA GeForce RTX 4060 Ti 上完成核验。[正式 ResNet18 报告](report/c_part_resnet18_rtx4060ti/C_REPORT.md)。
 
 研究主线是比较针对性增强与混合增强的效果，分析不同干扰之间的性能权衡，并检验局部对比度增强和特征融合是否改善这一权衡。详细步骤见 [项目推进计划](01-project-plan.md)。
 
@@ -8,10 +8,10 @@
 
 | 指标 | 值 |
 |---|---|
-| 已完成 | 2 项 |
-| 进行中 | 1 项 |
+| 已完成 | 3 项 |
+| 进行中 | 0 项 |
 | 待开始 | 4 项 |
-| 任务完成率 | 2/7，约 29%，按当前 ResNet 范围重新计数；历史 SmallCNN 完成记录保留 |
+| 任务完成率 | 3/7，约 43%，按当前 ResNet 范围重新计数；历史 SmallCNN 完成记录保留 |
 
 ## 步骤清单
 
@@ -20,7 +20,7 @@
 | 已完成 | 00 | 下载整理 GTSRB，并完成 7 类 CNN 预实验 | [GTSRB 数据说明](data/GTSRB/README_dataset.txt)、[已有指标](results/cnn_pilot_metrics.csv)、[实验代码](experiments/cnn_robustness_pilot.py) | 2026-11-11 核验 |
 | 已完成 | 01 | 整理研究问题、实验预算与判定规则 | [项目推进计划](01-project-plan.md) | 2026-11-11 |
 | 待开始 | 02 | 冻结协议并补齐无增强基线 | [第一阶段](01-project-plan.md#第一阶段-冻结协议并补齐基线) | — |
-| 进行中 | 03 | 保留既有融合，迁移到官方 ResNet18 并重新实验 | [新实施协议](03-resnet-c-implementation.md)、[历史 SmallCNN 报告](report/c_part/C_REPORT.md) | — |
+| 已完成 | 03 | 保留既有融合，完成官方 ResNet18 的 15 次开发验证及汇总 | [正式 ResNet18 报告](report/c_part_resnet18_rtx4060ti/C_REPORT.md) | 2026-11-23 |
 | 待开始 | 04 | 分析特征与聚类结构 | [第三阶段](01-project-plan.md#第三阶段-用特征聚类回应老师的建议) | — |
 | 待开始 | 05 | 锁定方案并完成独立测试 | [第四阶段](01-project-plan.md#第四阶段-独立测试与可选的-43-类扩展) | — |
 | 待开始 | 06 | 完成图表、报告和复现材料 | [第五阶段](01-project-plan.md#第五阶段-报告与交付) | — |
@@ -40,7 +40,7 @@
 
 已生成的 历史 SmallCNN Spark 包 保留归档，不用于当前 ResNet 方案；现使用下方名称含 ResNet18 的新包。
 
-当前使用 官方 ResNet18 Spark 训练包 `DS4023_TrafficSign_ResNet18_Spark_20261117.zip`（约 401 MiB），含完整数据与官方初始化，不含 Windows 环境或历史训练结果。训练包校验步骤见 [Spark 操作步骤](ResNet18_Spark_完整操作步骤.md)。代码与包验收完成，新模型正式成绩仍待 Spark 运行。
+当前使用 官方 ResNet18 Spark 训练包 `DS4023_TrafficSign_ResNet18_Spark_20261117.zip`（约 401 MiB），含完整数据与官方初始化，不含 Windows 环境或历史训练结果。训练包校验步骤见 [Spark 操作步骤](ResNet18_Spark_完整操作步骤.md)。RTX 正式开发验证结果见[正式 ResNet18 报告](report/c_part_resnet18_rtx4060ti/C_REPORT.md)。
 
 ## 项目约束
 
@@ -50,17 +50,17 @@
 - 结论以对照和重复实验为依据，不预设双分支一定有效。
 - 训练步数和增强数量需要控制，双分支的额外计算量单独报告。
 - 历史 SmallCNN 已完成 15 次训练与模型重载，门控偏向增强分支及去噪退步结论仅属于该历史模型。
-- 当前官方 ResNet18 采用 ImageNet 初始化，保留原融合和对照；导出改为 512 维。新的正式分数和报告必须在 Spark 训练后生成。
+- 当前官方 ResNet18 采用 ImageNet 初始化，保留原融合和对照；导出改为 512 维。本次正式开发验证使用 Windows RTX 4060 Ti。
 - B 已提供 12 组配置与十三条件汇总，完整训练产物尚未随交接提供；A 正式结果、D 聚类和全组官方测试仍待核实或完成。当前材料仅为开发验证。
 
 ## 2026-11-22 B 到 C 交接
 
 推进记录见 [交接核验计划](04-b-c-handoff-review.md) 与 [交接审查结果](results/b_handoff_review_20261122/REVIEW.md)。B 的共享视图源码和固定划分与当前 C 相同，但其记录显示十三条件中九项像素指纹与 A 历史记录不同；本机五条件三视图核验见 [输入核验记录](results/b_handoff_review_20261122/local_five_condition_views.json)。跨成员配对前需确认统一输入像素，正式训练、评估及成本证据分别验收。
 
-已搜索的本机目录及相关 ZIP 中没有找到 A 的原评估实现或正式 ResNet18 C 15 次结果；此前 ResNet18 Spark ZIP 是代码/数据/初始化输入包，不含训练完成后的模型。结果仍可能位于实体 Spark，找到并核验前不将其计为已完成，也不直接决定重训。
+已搜索的本机目录及相关 ZIP 中没有找到 A 的原评估实现。十三条件配对比较仍需完整评估代码及统一输入指纹。
 
-B 交接的 35 个文件已留档核验，审计和三种子统计见 [审计结果](results/b_handoff_review_20261122/summary/audit.json)。新增工具与全量回归验收完成：67 项中 66 通过、1 项 Windows 符号链接权限跳过，0 失败、0 错误。此进展属于交接工程与输入核验，不将 C 正式实验进度改为完成。
+B 交接的 35 个文件已留档核验，审计和三种子统计见 [审计结果](results/b_handoff_review_20261122/summary/audit.json)。新增工具与全量回归验收完成：67 项中 66 通过、1 项 Windows 符号链接权限跳过，0 失败、0 错误。此段记录的是 B/C 交接工程与输入核验。跨成员正式对照、同机额外推理成本和独立测试仍待完成。
 
 ## 待明确的信息
 
-实际提交日期、最终报告格式，以及老师是否希望聚类成为主任务，仍由项目作者在相应阶段确认。GPU 机器已确认为 DGX Spark，驱动与 CUDA 可用性由专用脚本在目标机自动检查；当前已完成的正式实验运行于 Windows CPU，未声称已在 Spark/GPU 验证。
+实际提交日期、最终报告格式，以及老师是否希望聚类成为主任务，仍由项目作者在相应阶段确认。GPU 机器已确认为 DGX Spark，驱动与 CUDA 可用性由专用脚本在目标机自动检查；历史 SmallCNN 运行于 Windows CPU，本次正式 ResNet18 运行于 Windows RTX 4060 Ti。
