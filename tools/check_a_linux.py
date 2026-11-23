@@ -142,11 +142,20 @@ def main(argv=None):
     report["pip_freeze"] = "pip-freeze.txt"
     (args.output / "environment.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    freeze = subprocess.run([sys.executable, "-m", "pip", "freeze"],
-                            capture_output=True, text=True, check=True).stdout
-    (args.output / "pip-freeze.txt").write_text(freeze, encoding="utf-8")
+    freeze_path = args.output / "pip-freeze.txt"
+    try:
+        freeze = subprocess.run([sys.executable, "-m", "pip", "freeze"],
+                                capture_output=True, text=True, check=True).stdout
+        freeze_path.write_text(freeze, encoding="utf-8")
+    except (OSError, subprocess.CalledProcessError) as error:
+        # Vendor containers may ship a venv without pip; keep the probe usable and say so.
+        report["pip_freeze"] = f"unavailable: {type(error).__name__}"
+        (args.output / "environment.json").write_text(
+            json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        freeze_path.write_text("pip freeze unavailable in this environment\n", encoding="utf-8")
+        print(f"WARNING: pip freeze unavailable ({type(error).__name__}); recorded as such.")
     print(f"Wrote {args.output / 'environment.json'} and pip-freeze.txt")
-    print("Next: bash A_LINUX.sh check")
+    print("Next: bash A_LINUX.sh check  (or bash A_SPARK.sh check on DGX Spark)")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 # A 在 Linux GPU 服务器上的操作步骤
 
-> 目标：在**干净的 Linux 机器**上跑完 A 的九次正式训练、十三条件评估和汇总。全部命令都在仓库根目录执行。
+> 目标：在**干净的 x86_64 Linux 机器**上跑完 A 的九次正式训练、十三条件评估和汇总。全部命令都在仓库根目录执行。
+> **DGX Spark（ARM64 / GB10）不要用本文**：pip 的 CUDA wheel 在 aarch64 上不通用，Spark 请按 [A_SPARK_STEPS.md](A_SPARK_STEPS.md) 用 NVIDIA ARM64 容器运行 `bash A_SPARK.sh …`。
 > 协议与冻结参数见 [A_PROTOCOL.md](A_PROTOCOL.md)。本文只讲操作、预期产物和排错。
 
 ## 0. 前提

@@ -148,6 +148,8 @@ A 的正式训练（`--inputs raw`，三种策略 × 种子 42/43/44）：
 
 ## 9. 复现命令
 
+普通 x86_64 Linux GPU 服务器（pip 环境）：
+
 ```bash
 bash A_LINUX.sh setup      # 建环境，装匹配 CUDA 的 Torch/Torchvision
 bash A_LINUX.sh check      # GPU/显存探针 + 数据预算审计 + 回归测试
@@ -157,6 +159,20 @@ bash A_LINUX.sh verify     # 只读核验
 bash A_LINUX.sh eval13     # 开发集十三条件评估
 bash A_LINUX.sh report     # 表格、配对差值、强度曲线
 ```
+
+DGX Spark（ARM64 / GB10，走仓库自带的 NVIDIA ARM64 镜像；命令清单见 [A_SPARK_STEPS.md](A_SPARK_STEPS.md)）：
+
+```bash
+bash A_SPARK.sh setup      # 构建/复用 ds4023-c-resnet18-spark:25.11，然后自动 check
+bash A_SPARK.sh check
+bash A_SPARK.sh smoke
+bash A_SPARK.sh train
+bash A_SPARK.sh verify
+bash A_SPARK.sh eval13
+bash A_SPARK.sh report
+```
+
+两种环境的结果目录必须分开（`results/a_spark_v1/` 与 `results/a_resnet18_linux_v1/`），不能混入同一个三种子均值。
 
 官方测试必须单独执行，且先冻结：
 
