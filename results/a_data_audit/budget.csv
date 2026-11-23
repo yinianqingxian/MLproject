@@ -1,0 +1,4 @@
+strategy,clean_entries,extra_entries,total_entries,extra_breakdown,batch_size,epochs,optimizer_updates
+repeat_clean,2940,1470,4410,"{""repeat"": 1470}",128,10,350
+targeted_motion,2940,1470,4410,"{""motion"": 1470}",128,10,350
+mixed,2940,1470,4410,"{""dark"": 490, ""motion"": 490, ""noise"": 490}",128,10,350

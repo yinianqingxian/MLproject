@@ -1,0 +1,14 @@
+condition,severity,parameter,images,image_condition_pairs
+clean,none,,840,840
+motion,low,3,840,840
+motion,medium,5,840,840
+motion,high,7,840,840
+noise,low,10,840,840
+noise,medium,20,840,840
+noise,high,30,840,840
+dark,low,0.7,840,840
+dark,medium,0.45,840,840
+dark,high,0.25,840,840
+jpeg,low,40,840,840
+jpeg,medium,20,840,840
+jpeg,high,10,840,840

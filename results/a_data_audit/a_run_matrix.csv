@@ -1,0 +1,10 @@
+run_id,augmentation,input,seed
+repeat_clean_raw_seed42,repeat_clean,raw,42
+repeat_clean_raw_seed43,repeat_clean,raw,43
+repeat_clean_raw_seed44,repeat_clean,raw,44
+targeted_motion_raw_seed42,targeted_motion,raw,42
+targeted_motion_raw_seed43,targeted_motion,raw,43
+targeted_motion_raw_seed44,targeted_motion,raw,44
+mixed_raw_seed42,mixed,raw,42
+mixed_raw_seed43,mixed,raw,43
+mixed_raw_seed44,mixed,raw,44
