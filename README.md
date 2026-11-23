@@ -2,6 +2,8 @@
 
 DS 4023 交通标志鲁棒性研究。项目使用 GTSRB 七类限速标志，比较训练增强策略、CLAHE 单分支与双视图融合。当前 C 部分使用 Torchvision 官方 ImageNet 预训练 ResNet18，共享编码器导出 512 维特征。正式矩阵为五组配置各三个种子，共 15 次。实验设置见 [训练协议](PROTOCOL.md)。
 
+团队成员在各自的分支提交改动，通过 Pull Request 合入 `main`。[贡献指南](CONTRIBUTING.md)
+
 ## 在 DGX Spark 运行
 
 ```bash
