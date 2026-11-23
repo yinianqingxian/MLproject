@@ -1,0 +1,10 @@
+# A 的 Linux GPU 服务器依赖（Torch/Torchvision 由 A_LINUX.sh setup 单独安装）。
+# 像素生成相关版本与 Windows 的 requirements.lock 保持一致，用于尽量提高跨机器 data_fingerprint
+# 的可比性；opencv 用 headless 版，服务器不需要 GUI，像素实现与 opencv-python 相同。
+# 若这些固定版本在当前 Python 上没有 wheel，setup 会退回兼容范围并打印警告，此时跨机器像素
+# 一致性必须用逐步指纹另行核对，不能假设相同。
+# 若服务器已有厂商环境，先核对已有版本，不要盲目降级其 NumPy。
+numpy==2.1.2
+opencv-python-headless==4.10.0.84
+scikit-learn==1.8.0
+matplotlib==3.10.9
