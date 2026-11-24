@@ -1,0 +1,94 @@
+{
+  "augmentation": "targeted_motion",
+  "backbone": "torchvision.models.resnet18",
+  "batch_size": 128,
+  "betas": [
+    0.9,
+    0.999
+  ],
+  "clahe": {
+    "channel": "LAB_L",
+    "clip_limit": 2.0,
+    "tile_grid": [
+      4,
+      4
+    ]
+  },
+  "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8
+  ],
+  "clean_training_images": 2940,
+  "code_fingerprints": {
+    "cnn_robustness_pilot.py": "b5a3ed68c118596a744630bde099ba569af1fdba4bb19fd7c660eb41d61bb206",
+    "cnn_robustness_study.py": "7b0c17d5cd4da38bc453ff5092aeb0cef1dd149cf9faf83e67aeba30f3f0c36d",
+    "resnet_robustness_study.py": "87a029536db1a1f28d89b2a3d864cbf0db9c1acc9a254d44d602766588f38061",
+    "run_c_study.py": "57ef2a702252e404a9aec73bd46d04bc487fd66848015e85f9f59a30f2601ade",
+    "run_resnet_study.py": "e7cf9f0724db5af3247208e20e95ba36fdbbc0fedbc4ba342284b037f8cb0adc"
+  },
+  "data_fingerprint": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+  "denoising": {
+    "d": 5,
+    "method": "bilateral",
+    "sigmaColor": 25,
+    "sigmaSpace": 2
+  },
+  "device": "cuda",
+  "environment": {
+    "cpu_count": 24,
+    "cuda_device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "cuda_runtime": "13.0",
+    "device": "cuda",
+    "numpy": "2.4.1",
+    "opencv": "5.0.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python": "3.14.2",
+    "sklearn": "1.8.0",
+    "torch": "2.14.0+cu130",
+    "torchvision": "0.29.1+cu130",
+    "torchvision_module_path": "C:\\Users\\Weisifengbuxi\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\torchvision\\__init__.py",
+    "torchvision_version": "0.29.1+cu130"
+  },
+  "epochs": 10,
+  "eps": 1e-08,
+  "evaluation": "final_epoch_development_validation",
+  "feature_dim": 512,
+  "image_size": 32,
+  "input": "raw",
+  "learning_rate": 0.003,
+  "network_input_size": 224,
+  "optimizer": "AdamW",
+  "preprocessing_seconds": {
+    "data_preparation": 4.601289900019765,
+    "train_clean": 0.3491210999782197,
+    "training_repeat_clean": 0.39970189999439754,
+    "training_targeted_motion": 0.47040339998784475,
+    "validation_clean": 0.0744332000031136,
+    "validation_dark": 0.07685099999071099,
+    "validation_jpeg": 0.06904569998732768,
+    "validation_motion": 0.08201140002347529,
+    "validation_noise": 0.07856369999353774
+  },
+  "pretrained": true,
+  "run_id": "targeted_motion_raw_seed42",
+  "schema_version": 1,
+  "seed": 42,
+  "split_sha256": "de914a9199138474115a14776a61574651653ed87c72a26b9804bb35c5aa5359",
+  "threads": 6,
+  "torchvision_module_path": "C:\\Users\\Weisifengbuxi\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\torchvision\\__init__.py",
+  "torchvision_version": "0.29.1+cu130",
+  "train_tracks": 98,
+  "training_entries": 4410,
+  "validation_images": 840,
+  "validation_tracks": 28,
+  "weight_decay": 0.01,
+  "weights_id": "ResNet18_Weights.IMAGENET1K_V1",
+  "weights_path": "assets/weights/resnet18-f37072fd.pth",
+  "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+}

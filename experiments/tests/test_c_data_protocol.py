@@ -9,6 +9,7 @@ import copy
 import csv
 import importlib
 import importlib.util
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -27,16 +28,16 @@ class DataProtocolTests(unittest.TestCase):
         if importlib.util.find_spec("run_c_study") is None:
             raise AssertionError("正式运行的数据适配模块尚未实现")
         cls.runner = importlib.import_module("run_c_study")
-        cls.project = Path(__file__).resolve().parents[2]
+        project = Path(__file__).resolve().parents[2]
+        cls.data_root = Path(os.environ.get("A_DATA_ROOT", project / "data/GTSRB/raw"))
+        cls.split = Path(os.environ.get("A_SPLIT", project / "results/pilot_split.csv"))
 
     def test_augmentation_matches_pilot_and_clean_repeat_uses_same_sources(self):
-        root = self.project / "data/GTSRB/raw"
-        split = self.project / "results/pilot_split.csv"
-        data = self.runner.prepare_data(root, split)
+        data = self.runner.prepare_data(self.data_root, self.split)
         rng = np.random.default_rng(42)
-        rows = pilot.select_split(root, rng)
+        rows = pilot.select_split(self.data_root, rng)
         indices = copy.deepcopy(rng).choice(2940, 1470, replace=False)
-        old_training, old_y, old_validation, old_valid_y = pilot.prepare_images(cv2, root, rows, rng)
+        old_training, old_y, old_validation, old_valid_y = pilot.prepare_images(cv2, self.data_root, rows, rng)
         self.assertEqual([len(data["training"][name]) for name in
                           ("repeat_clean", "targeted_motion", "mixed")], [4410, 4410, 4410])
         self.assertEqual(len(data["train_rows"]), 2940)
@@ -54,7 +55,7 @@ class DataProtocolTests(unittest.TestCase):
         self.assertEqual(len(data["data_fingerprint"]), 64)
 
     def test_modified_split_is_rejected_before_training(self):
-        with (self.project / "results/pilot_split.csv").open(encoding="utf-8", newline="") as handle:
+        with self.split.open(encoding="utf-8", newline="") as handle:
             rows = list(csv.DictReader(handle))
         rows[0]["track_id"] = rows[-1]["track_id"]
         with tempfile.TemporaryDirectory() as temporary:
@@ -64,7 +65,7 @@ class DataProtocolTests(unittest.TestCase):
                 writer.writeheader()
                 writer.writerows(rows)
             with self.assertRaises(ValueError):
-                self.runner.prepare_data(self.project / "data/GTSRB/raw", path)
+                self.runner.prepare_data(self.data_root, path)
 
 
 if __name__ == "__main__":

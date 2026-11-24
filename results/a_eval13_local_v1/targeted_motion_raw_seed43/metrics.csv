@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,clean,none,0.9377019845766468,0.9369047619047619,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,motion,low,0.9154959144849364,0.9142857142857143,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,motion,medium,0.8787408065430782,0.8761904761904762,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,motion,high,0.8059663732463941,0.8071428571428572,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,noise,low,0.9114090066344606,0.9107142857142857,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,noise,medium,0.785835277737456,0.794047619047619,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,noise,high,0.6211592398349876,0.6404761904761904,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,dark,low,0.9368301167373355,0.9369047619047619,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,dark,medium,0.8625711186662546,0.8654761904761905,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,dark,high,0.4982454443079491,0.49642857142857144,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,jpeg,low,0.900169361610157,0.9,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,jpeg,medium,0.7338807130103886,0.7511904761904762,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,jpeg,high,0.5296418608721837,0.5642857142857143,840,11180103
