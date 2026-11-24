@@ -1,0 +1,39 @@
+{
+  "scope": "development_validation_inference_timing_only",
+  "fusion_run_id": "mixed_dual_seed42",
+  "fusion_checkpoint_sha256": "6969735ca62f1121d445a551cc9f9b23dfaa04e68ff440d9df25d277247b3481",
+  "raw_run_id": "mixed_raw_seed42",
+  "raw_checkpoint_sha256": "99a22eaf34bcdba68995f720c6d40a79b3989ab52751741840b5eee58027e20f",
+  "raw_source": "independently_trained",
+  "clahe_source": "shared_fusion_encoder_and_classifier",
+  "split_sha256": "de914a9199138474115a14776a61574651653ed87c72a26b9804bb35c5aa5359",
+  "data_fingerprint": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+  "source_sha256": "2fb8cc75f2d640473dea0e4e332c778f48bf26b18039a0088385f978ae2838ff",
+  "environment": {
+    "python": "3.12.7",
+    "torch": "2.5.1",
+    "numpy": "1.26.4",
+    "opencv": "4.10.0",
+    "sklearn": "1.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "cpu_count": 16,
+    "device": "cuda",
+    "cuda_runtime": "12.4",
+    "cuda_device": "NVIDIA GeForce RTX 4060 Ti"
+  },
+  "batch_size": 128,
+  "threads": 6,
+  "repeats": 3,
+  "warmup_images_per_mode_condition": 128,
+  "shared_three_view_cache_seconds": {
+    "clean": 0.14981440000701696,
+    "motion": 0.06458459998248145,
+    "noise": 0.06497000000672415,
+    "dark": 0.05987270001787692,
+    "jpeg": 0.06299539998872206
+  },
+  "timed_components": "CPU cache selection, device copy, official preprocessing, forward, CPU result collection; CUDA synchronized",
+  "excluded_components": "disk IO, corruption generation, shared view cache creation, model loading and output serialization",
+  "precision": "FP32 with TF32 disabled"
+}

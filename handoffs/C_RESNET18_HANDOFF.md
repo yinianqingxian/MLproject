@@ -30,7 +30,20 @@
 
 原交接 ZIP 保存 C 的训练与五条件开发验证产物。C 的 15 份末轮权重已按 A 的评估协议补齐十三条件推理，共有 195 行指标、163,800 条逐图预测和 195 份验证特征。十三条件特征保存在 C 的评估原始目录，可与 ZIP 中同一 `run_id` 的 `train_clean.npz` 配对。 [十三条件报告](../report/c_part_eval13_rtx4060ti/C_REPORT.md)
 
-A 和 B 的同条件产物到齐后，D 可用各成员的 `data_fingerprint`、`split_sha256` 和每个条件的 `pixel_sha256` 核对可比性。C 已用同一权重测出单路与双路的开销，拿到 A 的 `mixed_raw_seed42` 完整运行后可补做正式单分支的同机对照。官方七类独立测试由全组冻结方案后统一进行。 [同机计时说明](../results/c_inference_cost_rtx4060ti_20261123/README.md)
+A 的正式结果和权重已收到并核验。A 与 C 的 840 张验证图、划分和 13 个条件像素指纹一致。B 的现有材料有 4 个条件与 A/C 的像素指纹一致，取得 B 的完整产物后再复核训练数据指纹和输入视图。官方七类独立测试由全组冻结方案后统一进行。 [A 的交接说明](A_TO_D_HANDOFF.md) · [A 的条件清单](../results/a_eval13_local_v1/conditions.json) · [C 的条件清单](../results/c_eval13_rtx4060ti_v1/conditions.json)
+
+## A 与 C 的同机计时
+
+正式对照已复测完成。RTX 4060 Ti 上，A 的原图单路平均为 **0.70–0.72 毫秒/图**，C 的门控双路为 **1.44–1.45 毫秒/图**，五个开发条件的配对倍率为 **2.01–2.06 倍**。按 batch 128 的吞吐折算，视图缓存构建耗时单独记录。仓库附有 45 条原始计时、10 条汇总和两份末轮权重的 SHA-256。A/C 正式对照取 `summary.csv` 中 `single_input=raw` 的五行。 [原始计时](../results/c_inference_cost_a_vs_c_rtx4060ti_20261124_recheck/timings.csv) · [配对汇总](../results/c_inference_cost_a_vs_c_rtx4060ti_20261124_recheck/summary.csv) · [环境及指纹](../results/c_inference_cost_a_vs_c_rtx4060ti_20261124_recheck/benchmark_manifest.json)
+
+复测时在仓库根目录准备好 GTSRB 原图、`results/pilot_split.csv` 和 A、C 两组完整运行目录。以下命令写入新的结果目录。脚本会先核验权重、运行产物、种子、训练预算和数据指纹。 [数据目录说明](../README.md)
+
+```bash
+python -u tools/benchmark_resnet_inference.py \
+  --raw-run results/a_local_v1/runs/mixed_raw_seed42 \
+  --fusion-run results/study_resnet18_rtx4060ti_v1/runs/mixed_dual_seed42 \
+  --output results/ac_inference_cost_recheck
+```
 
 ## 复跑十三条件评估
 
