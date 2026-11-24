@@ -174,7 +174,9 @@ bash A_SPARK.sh eval13
 bash A_SPARK.sh report
 ```
 
-两种环境的结果目录必须分开（`results/a_spark_v1/` 与 `results/a_resnet18_linux_v1/`），不能混入同一个三种子均值。
+Kaggle Notebook（GPU T4/P100，没有固定 IP 的临时环境；见 [A_KAGGLE.ipynb](A_KAGGLE.ipynb)）：把 `a_kaggle_dataset.zip`（含官方权重）上传成 Dataset，打开 Internet，然后依次运行 Notebook 的单元格；训练/评估/包目录固定为 `results/a_kaggle_v1/`、`results/a_eval13_kaggle_v1/`、`report/a_part_kaggle/`。
+
+三种环境的结果目录必须分开（`results/a_spark_v1/`、`results/a_resnet18_linux_v1/`、`results/a_kaggle_v1/`），不能混入同一个三种子均值。Kaggle 的 GPU 型号、框架构建和浮点执行都与前两者不同，报告里要单独标注环境。
 
 官方测试必须单独执行，且先冻结：
 
