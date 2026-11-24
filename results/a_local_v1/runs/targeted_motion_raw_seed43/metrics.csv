@@ -1,0 +1,6 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,clean,none,0.9377019845766468,0.9369047619047619,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,motion,medium,0.8787408065430782,0.8761904761904762,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,noise,medium,0.785835277737456,0.794047619047619,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,dark,medium,0.8625711186662546,0.8654761904761905,840,11180103
+targeted_motion_raw_seed43,43,targeted_motion,raw,validation,jpeg,medium,0.7338807130103886,0.7511904761904762,840,11180103

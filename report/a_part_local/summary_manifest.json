@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "eval_directory": "results/a_eval13_local_v1",
+  "runs": 9,
+  "conditions": 13,
+  "images_per_condition": 840,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "configs": [
+    "mixed",
+    "repeat_clean",
+    "targeted_motion"
+  ],
+  "tables": [
+    "dev13_by_run.csv",
+    "dev13_summary.csv",
+    "dev13_paired.csv",
+    "dev13_families.csv",
+    "dev13_per_class.csv",
+    "dev13_costs.csv"
+  ],
+  "figures": [
+    "dev13_curves.png",
+    "dev13_conditions.png",
+    "dev13_families.png"
+  ],
+  "completion_sha256": "54c6426eed0e388b2439675775e661c1022ef7a6fface18e9d41ace4c48de04f"
+}

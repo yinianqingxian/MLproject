@@ -9,8 +9,9 @@
 | 数据/划分/预算审计 | 已完成 | `results/a_data_audit/` |
 | 干扰与评估模块 | 已完成并通过回归测试 | `experiments/a_conditions.py`、`experiments/evaluate_a13.py`、`experiments/evaluate_official_test.py` |
 | 汇总程序（表格/配对/曲线） | 已完成 | `experiments/summarize_a_study.py` → `report/a_part/` |
-| 九次原图单分支训练 | **待 Linux 运行** | `results/a_resnet18_linux_v1/` |
-| 开发集十三条件评估 | **待训练完成后运行** | `results/a_eval13_linux_v1/` |
+| 九次原图单分支训练 | **已完成**（Windows RTX 4060 Laptop，41 分钟） | `results/a_local_v1/` |
+| 开发集十三条件评估 | **已完成**（117 条指标、98,280 条预测） | `results/a_eval13_local_v1/` |
+| 汇总表与图 | **已完成** | `report/a_part_local/` |
 | 官方七类测试评估 | 需全组冻结后运行 | `results/a_test7_v1/` |
 
 D 现在就可以用审计表和 schema 写合并程序；训练产物到位后不需要改接口。
@@ -20,7 +21,7 @@ C 的 15 组已用同一评估入口完成十三条件开发集推理。C 报告
 ## 2. 目录结构
 
 ```text
-results/a_resnet18_linux_v1/            九次训练（run_resnet_study.py 输出）
+results/a_local_v1/                    九次训练（已提交，权重 *.pt 与特征 *.npz 不进仓库）
 ├── run_config.json                     {"common": {...}, "matrix": [[aug, mode, seed], ...]}
 ├── split.csv                           冻结划分副本
 ├── data_manifest.json                  数据生成指纹
@@ -31,7 +32,7 @@ results/a_resnet18_linux_v1/            九次训练（run_resnet_study.py 输�
     └── features/{train_clean,validation_clean,validation_motion,
                   validation_noise,validation_dark,validation_jpeg}.npz
 
-results/a_eval13_linux_v1/              十三条件评估（evaluate_a13.py 输出）
+results/a_eval13_local_v1/              十三条件评估（已提交，特征 *.npz 不进仓库）
 ├── conditions.json  images.csv  completion.json
 └── <同一个 run_id>/
     ├── metrics.csv  predictions.csv  costs.csv
@@ -139,10 +140,10 @@ python tools/audit_a_data.py --output /tmp/a_audit && cat /tmp/a_audit/audit.jso
 # 只读核验九个训练运行与全部产物指纹
 python experiments/run_resnet_study.py --inputs raw \
   --augmentations repeat_clean targeted_motion mixed --seeds 42 43 44 \
-  --output-dir results/a_resnet18_linux_v1 --verify-only
+  --output-dir results/a_local_v1 --verify-only
 
 # 复算十三条件汇总
-python experiments/summarize_a_study.py --eval results/a_eval13_linux_v1 --output /tmp/a_report
+python experiments/summarize_a_study.py --eval results/a_eval13_local_v1 --output /tmp/a_report
 ```
 
 有问题直接找我核对，不要自行修改 A 的产物目录。

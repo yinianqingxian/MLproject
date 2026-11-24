@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_raw_seed42,42,mixed,raw,validation,clean,none,0.984444641845107,0.9845238095238096,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,motion,low,0.9652836473944062,0.9654761904761905,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,motion,medium,0.9114057650500127,0.9119047619047619,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,motion,high,0.8081707149921121,0.8107142857142857,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,noise,low,0.9641421627026351,0.9642857142857143,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,noise,medium,0.9253049883832677,0.925,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,noise,high,0.8346252577976063,0.8321428571428572,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,dark,low,0.9724061665124625,0.9726190476190476,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,dark,medium,0.9370027498211849,0.9392857142857143,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,dark,high,0.8243602420481204,0.8369047619047619,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,jpeg,low,0.9523791466778259,0.9523809523809523,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,jpeg,medium,0.8022513162045294,0.8035714285714286,840,11180103
+mixed_raw_seed42,42,mixed,raw,validation,jpeg,high,0.6062514657412359,0.6071428571428571,840,11180103
