@@ -234,13 +234,15 @@ scp jeremy@spark-d01d:~/ds4023_a/a_spark_results.tgz ~/Desktop/
 
 ## 第 12 步（后置）：官方七类测试
 
-按协议要等全组方案冻结后才打开测试分数：
+等全组方案冻结后再运行官方测试。以下默认命令只评估 A 的研究目录。
 
 ```bash
 cd ~/ds4023_a/MLproject
 bash A_SPARK.sh freeze     # 写出 results/a_test7_freeze.json
 bash A_SPARK.sh test7      # 独立测试评估
 ```
+
+全组正式测试使用单独的清单。通过 `bash A_SPARK.sh shell` 进入容器，用 `python experiments/evaluate_official_test.py` 的 `--init-freeze` 指定新清单，并重复传入 `--study`，分别登记 A、B、C 已验收的研究目录。回到宿主机后，将 `A_TEST_FREEZE` 指向该清单、`A_TEST_OUTPUT` 指向新的输出目录，再运行 `bash A_SPARK.sh test7`。
 
 ---
 

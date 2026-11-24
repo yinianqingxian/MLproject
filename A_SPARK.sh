@@ -24,7 +24,7 @@ Commands:
   report   容器内汇总表格、配对差值、强度曲线到 report/a_part。
   freeze   写出官方测试评估的冻结清单。
   test7    官方七类测试子集独立评估（需先 freeze）。
-  status   宿主机查看各输出目录进度。
+  status   宿主机按完成标记查看各输出目录进度。
   shell    进入同一个容器交互排查。
   all      check → smoke → train → verify → eval13 → report
 
@@ -88,12 +88,25 @@ case "$command_name" in
         ;;
     status)
         for dir in "$output" "$smoke_output" "$eval_output" "$test_output"; do
-            if [[ -d "$project_root/$dir" ]]; then
-                runs=$(find "$project_root/$dir/runs" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-                printf '%-40s %2s runs  %s\n' "$dir" "$runs" "$(du -sh "$project_root/$dir" 2>/dev/null | cut -f1)"
-            else
+            path="$project_root/$dir"
+            if [[ ! -d "$path" ]]; then
                 printf '%-40s (missing)\n' "$dir"
+                continue
             fi
+            if [[ "$dir" == "$output" || "$dir" == "$smoke_output" ]]; then
+                runs=0
+                for marker in "$path"/runs/*/completion.json; do
+                    if [[ -f "$marker" ]]; then
+                        runs=$((runs + 1))
+                    fi
+                done
+                state="$runs completed runs"
+            elif [[ -f "$path/completion.json" ]]; then
+                state=complete
+            else
+                state=incomplete
+            fi
+            printf '%-40s %s  %s\n' "$dir" "$state" "$(du -sh "$path" 2>/dev/null | cut -f1)"
         done
         exit 0
         ;;
@@ -121,13 +134,14 @@ image_id="${image_details#*|}"
 
 case "$command_name" in
     check)
-        payload=(bash -lc "set -e
+        payload=(bash -lc 'set -e
+export A_DATA_ROOT="$1"
 python tools/check_a_linux.py --weights assets/weights/resnet18-f37072fd.pth --output results/a_spark_environment
-python tools/audit_a_data.py --data-root $data_root --output results/a_spark_environment/data_audit
-python -m unittest discover -s experiments/tests -p 'test_c_data_protocol.py' -v
-python -m unittest discover -s experiments/tests -p 'test_a_conditions.py' -v
-python -m unittest discover -s experiments/tests -p 'test_a_evaluate.py' -v
-python -m unittest discover -s experiments/tests -p 'test_a_summary.py' -v") ;;
+python tools/audit_a_data.py --data-root "$1" --output results/a_spark_environment/data_audit
+python -m unittest discover -s experiments/tests -p test_c_data_protocol.py -v
+python -m unittest discover -s experiments/tests -p test_a_conditions.py -v
+python -m unittest discover -s experiments/tests -p test_a_evaluate.py -v
+python -m unittest discover -s experiments/tests -p test_a_summary.py -v' bash "$data_root") ;;
     smoke)
         payload=(python experiments/run_resnet_study.py --inputs raw --augmentations mixed
                  --seeds 42 --epochs 1 --threads "$threads" --device "$device"
@@ -153,19 +167,17 @@ python -m unittest discover -s experiments/tests -p 'test_a_summary.py' -v") ;;
     report)
         payload=(python experiments/summarize_a_study.py --eval "$eval_output" --output "$report_dir") ;;
     freeze)
-        payload=(python experiments/evaluate_official_test.py --init-freeze "$freeze" --study "$output") ;;
+        payload=(python experiments/evaluate_official_test.py --init-freeze "$freeze" --study "$output"
+                 --data-root "$data_root" --gt "$data_root/GT-final_test.csv") ;;
     test7)
         payload=(python experiments/evaluate_official_test.py --freeze "$freeze" --output "$test_output"
-                 --device "$device" --data-root "$data_root") ;;
+                 --device "$device" --data-root "$data_root" --gt "$data_root/GT-final_test.csv") ;;
     shell)
         payload=(bash) ;;
     all)
-        "$0" check
-        "$0" smoke
-        "$0" train
-        "$0" verify
-        "$0" eval13
-        "$0" report
+        for step in check smoke train verify eval13 report; do
+            bash "$project_root/A_SPARK.sh" "$step"
+        done
         exit 0 ;;
 esac
 

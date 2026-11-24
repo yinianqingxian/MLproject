@@ -7,6 +7,7 @@
 - 只做前向推理，不训练、不写正式结果目录；不读取官方测试图像。
 """
 
+import os
 from pathlib import Path
 import sys
 import unittest
@@ -19,6 +20,8 @@ from a_conditions import conditions, manifest
 from cnn_robustness_study import _evaluate, _metric_row, _prediction_rows, tensor_views
 from run_c_study import PROJECT, prepare_data
 
+DATA_ROOT = Path(os.environ.get("A_DATA_ROOT", PROJECT / "data/GTSRB/raw"))
+SPLIT = Path(os.environ.get("A_SPLIT", PROJECT / "results/pilot_split.csv"))
 CLASSES = [1, 2, 3, 4, 5, 7, 8]
 IMAGES = 8
 PREDICTION_FIELDS = {"run_id", "seed", "split", "image", "track_id", "condition",
@@ -30,7 +33,7 @@ class EvaluationContractTests(unittest.TestCase):
     def setUpClass(cls):
         from resnet_robustness_study import ResNet18Fusion
 
-        cls.data = prepare_data(PROJECT / "data/GTSRB/raw", PROJECT / "results/pilot_split.csv")
+        cls.data = prepare_data(DATA_ROOT, SPLIT)
         cls.rows = cls.data["validation_rows"][:IMAGES]
         # Use the public frozen-condition generator on a short prefix of the development set.
         cls.specs = [(kind, severity, value, images[:IMAGES])

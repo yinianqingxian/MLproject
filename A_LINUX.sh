@@ -21,9 +21,10 @@ TEST_OUTPUT="${A_TEST_OUTPUT:-results/a_test7_v1}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 export PYTHONUNBUFFERED=1
 
+TRAIN_DATA=(--data-root "$DATA_ROOT" --split "$SPLIT" --weights-path "$WEIGHTS")
 COMMON=(--inputs raw --augmentations repeat_clean targeted_motion mixed
         --seeds 42 43 44 --epochs 10 --threads "$THREADS" --device "$DEVICE"
-        --output-dir "$OUTPUT")
+        --output-dir "$OUTPUT" "${TRAIN_DATA[@]}")
 
 note() { printf '\n==> %s\n' "$*"; }
 die()  { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
@@ -125,9 +126,9 @@ check)
   "$PYTHON" tools/audit_a_data.py --data-root "$DATA_ROOT" --split "$SPLIT" \
     --output results/a_linux_environment/data_audit
   note "回归测试（数据协议、13 条件、汇总程序）"
+  export A_DATA_ROOT="$DATA_ROOT" A_SPLIT="$SPLIT"
   "$PYTHON" -m unittest discover -s experiments/tests -p 'test_c_data_protocol.py' -v
-  "$PYTHON" -m unittest discover -s experiments/tests -p 'test_a_conditions.py' -v
-  "$PYTHON" -m unittest discover -s experiments/tests -p 'test_a_summary.py' -v
+  "$PYTHON" -m unittest discover -s experiments/tests -p 'test_a_*.py' -v
   note "检查通过。下一步：bash A_LINUX.sh smoke"
   ;;
 
@@ -137,10 +138,11 @@ smoke)
   require_weights
   note "工程试跑：mixed × 种子 42 × 1 轮（不计入正式结果）"
   "$PYTHON" experiments/run_resnet_study.py --inputs raw --augmentations mixed \
-    --seeds 42 --epochs 1 --threads "$THREADS" --device "$DEVICE" --output-dir "$SMOKE_OUTPUT"
+    --seeds 42 --epochs 1 --threads "$THREADS" --device "$DEVICE" --output-dir "$SMOKE_OUTPUT" \
+    "${TRAIN_DATA[@]}"
   "$PYTHON" experiments/run_resnet_study.py --inputs raw --augmentations mixed \
     --seeds 42 --epochs 1 --threads "$THREADS" --device "$DEVICE" --output-dir "$SMOKE_OUTPUT" \
-    --verify-only
+    "${TRAIN_DATA[@]}" --verify-only
   note "试跑通过。正式训练输出目录：$OUTPUT"
   ;;
 
@@ -179,7 +181,7 @@ eval13)
   [[ -d "$OUTPUT/runs" ]] || die "没有训练结果：$OUTPUT。先跑 bash A_LINUX.sh train。"
   note "开发集十三条件评估：加载最终权重，不重新训练"
   "$PYTHON" experiments/evaluate_a13.py --study "$OUTPUT" --output "$EVAL_OUTPUT" \
-    --device "$DEVICE" --expect-runs 9
+    --device "$DEVICE" --data-root "$DATA_ROOT" --split "$SPLIT" --expect-runs 9
   note "评估结束。下一步：bash A_LINUX.sh report"
   ;;
 
@@ -194,7 +196,8 @@ report)
 freeze)
   require_python
   note "冻结官方测试的比较清单（在打开测试分数之前完成）"
-  "$PYTHON" experiments/evaluate_official_test.py --init-freeze "$FREEZE" --study "$OUTPUT"
+  "$PYTHON" experiments/evaluate_official_test.py --init-freeze "$FREEZE" --study "$OUTPUT" \
+    --data-root "$DATA_ROOT" --gt "$DATA_ROOT/GT-final_test.csv"
   note "冻结文件：$FREEZE。请勿在查看测试结果后修改它。"
   ;;
 
@@ -204,26 +207,36 @@ test7)
   [[ -f "$FREEZE" ]] || die "缺少冻结清单：$FREEZE。先跑 bash A_LINUX.sh freeze。"
   note "官方七类测试子集独立评估"
   "$PYTHON" experiments/evaluate_official_test.py --freeze "$FREEZE" --output "$TEST_OUTPUT" \
-    --device "$DEVICE"
+    --device "$DEVICE" --data-root "$DATA_ROOT" --gt "$DATA_ROOT/GT-final_test.csv"
   ;;
 
 status)
   for dir in "$OUTPUT" "$SMOKE_OUTPUT" "$EVAL_OUTPUT" "$TEST_OUTPUT"; do
-    if [[ -d "$dir" ]]; then
-      printf '%-45s %s runs, %s\n' "$dir" "$(find "$dir/runs" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" "$(du -sh "$dir" 2>/dev/null | cut -f1)"
-    else
+    if [[ ! -d "$dir" ]]; then
       printf '%-45s (missing)\n' "$dir"
+      continue
     fi
+    if [[ "$dir" == "$OUTPUT" || "$dir" == "$SMOKE_OUTPUT" ]]; then
+      runs=0
+      for marker in "$dir"/runs/*/completion.json; do
+        if [[ -f "$marker" ]]; then
+          runs=$((runs + 1))
+        fi
+      done
+      state="$runs completed runs"
+    elif [[ -f "$dir/completion.json" ]]; then
+      state=complete
+    else
+      state=incomplete
+    fi
+    printf '%-45s %s, %s\n' "$dir" "$state" "$(du -sh "$dir" 2>/dev/null | cut -f1)"
   done
   ;;
 
 all)
-  "$0" check
-  "$0" smoke
-  "$0" train
-  "$0" verify
-  "$0" eval13
-  "$0" report
+  for step in check smoke train verify eval13 report; do
+    bash ./A_LINUX.sh "$step"
+  done
   ;;
 
 help|*)

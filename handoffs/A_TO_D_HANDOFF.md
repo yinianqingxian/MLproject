@@ -15,6 +15,8 @@
 
 D 现在就可以用审计表和 schema 写合并程序；训练产物到位后不需要改接口。
 
+C 的 15 组已用同一评估入口完成十三条件开发集推理。C 报告提供可按 `run_id`、条件与图像配对的逐图数据和指纹，A 的九组正式结果到齐后可据此核对跨组可比性。 [C 十三条件报告](../report/c_part_eval13_rtx4060ti/C_REPORT.md)
+
 ## 2. 目录结构
 
 ```text
@@ -67,7 +69,7 @@ condition, severity, parameter, images, batch_size, preprocessing_seconds, evalu
 
 特征 `.npz`（`np.load` 后是数组）：`features`（840×512 或 4110×512）、`y_pred`、`image`、`track_id`、`y_true`、`gate`；融合模型另有 `raw_features`、`enhanced_features`。**行已按 `image` 升序排好**，可以直接与 `predictions.csv` 按 `image` 对齐。
 
-`conditions.json`：`levels`、`noise_seed`、`data_fingerprint`、`split_sha256`、`freeze_sha256`、`conditions[]`（每项含 `condition`、`severity`、`parameter`、`n_images`、`pixel_sha256`）、`source_hashes`。
+`conditions.json` 的公共字段包括 `levels`、`noise_seed`、`source_hashes` 和 `conditions[]`。每个条件包含 `condition`、`severity`、`parameter`、`n_images` 和 `pixel_sha256`。开发集另含 `data_fingerprint` 与 `split_sha256`。官方测试另含 `gt_sha256`、`subset_sha256` 与 `freeze_sha256`。
 
 `completion.json`：`runs[]`（`run_id`、`checkpoint_sha256` 等）、`totals`、`expected_totals`、`environment`、`artifact_hashes`。
 

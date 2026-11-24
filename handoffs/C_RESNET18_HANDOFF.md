@@ -28,4 +28,20 @@
 
 ## 交接范围
 
-包内保存 C 的正式开发验证产物。A 的 13 条件原评估实现及 A/B/C 的输入对齐仍需按全组协议确认。C 已用同一权重测出单路与双路的开销，拿到 A 的 `mixed_raw_seed42` 完整运行后可补做正式单分支的同机对照。最后的独立测试由全组冻结方案后统一进行。 [同机计时说明](../results/c_inference_cost_rtx4060ti_20261123/README.md)
+原交接 ZIP 保存 C 的训练与五条件开发验证产物。C 的 15 份末轮权重已按 A 的评估协议补齐十三条件推理，共有 195 行指标、163,800 条逐图预测和 195 份验证特征。十三条件特征保存在 C 的评估原始目录，可与 ZIP 中同一 `run_id` 的 `train_clean.npz` 配对。 [十三条件报告](../report/c_part_eval13_rtx4060ti/C_REPORT.md)
+
+A 和 B 的同条件产物到齐后，D 可用各成员的 `data_fingerprint`、`split_sha256` 和每个条件的 `pixel_sha256` 核对可比性。C 已用同一权重测出单路与双路的开销，拿到 A 的 `mixed_raw_seed42` 完整运行后可补做正式单分支的同机对照。官方七类独立测试由全组冻结方案后统一进行。 [同机计时说明](../results/c_inference_cost_rtx4060ti_20261123/README.md)
+
+## 复跑十三条件评估
+
+在仓库根目录准备好 GTSRB 原图和完整的 C 训练目录，使用与训练数据指纹一致的 Python 环境。下面的命令从已验收权重推理，输出目录须为新目录。 [数据目录说明](../README.md)
+
+```bash
+NVIDIA_TF32_OVERRIDE=0 CUBLAS_WORKSPACE_CONFIG=:4096:8 \
+  python experiments/evaluate_a13.py \
+  --study results/study_resnet18_rtx4060ti_v1 --expect-runs 15 --device cuda \
+  --data-root data/GTSRB/raw --split results/study_resnet18_rtx4060ti_v1/split.csv \
+  --output results/c_eval13_rtx4060ti_recheck
+```
+
+以输出目录的 `completion.json` 和 `15 / 195 / 163800 / 195` 四项总数验收，分别对应模型、指标、逐图预测和特征文件。若评估发现数据指纹不同，先核对划分、OpenCV 和 NumPy 环境，再在与训练像素匹配的环境复跑。 [A 的十三条件字段约定](A_TO_D_HANDOFF.md)

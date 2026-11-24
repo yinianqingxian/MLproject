@@ -46,4 +46,5 @@ bash SPARK.sh report
 - 历史 SmallCNN 的 15 次开发验证结果，含报告、图表和汇总指标。 [历史 C 报告](report/c_part/C_REPORT.md)
 - B 的 12 组 ResNet18 单分支汇总与输入一致性检查。正式配对分析需要先对齐输入像素。 [B/C 交接审查](results/b_handoff_review_20261122/REVIEW.md)
 - C 的 15 次正式 ResNet18 开发验证实验已在 Windows NVIDIA GeForce RTX 4060 Ti 上跑完并通过核验。 [正式 ResNet18 报告](report/c_part_resnet18_rtx4060ti/C_REPORT.md) · [项目进度](MASTER.md)
+- C 的 15 组正式权重按 A 的十三条件协议补做了开发集推理。 [十三条件报告](report/c_part_eval13_rtx4060ti/C_REPORT.md)
 - C 的模型和特征可用于分组复核与聚类。 [交接说明](handoffs/C_RESNET18_HANDOFF.md) · [单路与双路推理计时](results/c_inference_cost_rtx4060ti_20261123/README.md)

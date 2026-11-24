@@ -9,6 +9,7 @@
 """
 
 import csv
+import os
 from pathlib import Path
 import sys
 import unittest
@@ -20,11 +21,14 @@ import a_conditions
 from a_conditions import LEVELS, NOISE_SEED, TEST_NOISE_SEED, conditions, pixel_hash, test_conditions
 from run_c_study import PROJECT, prepare_data
 
+DATA_ROOT = Path(os.environ.get("A_DATA_ROOT", PROJECT / "data/GTSRB/raw"))
+SPLIT = Path(os.environ.get("A_SPLIT", PROJECT / "results/pilot_split.csv"))
+
 
 class DevelopmentConditionsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.data = prepare_data(PROJECT / "data/GTSRB/raw", PROJECT / "results/pilot_split.csv")
+        cls.data = prepare_data(DATA_ROOT, SPLIT)
 
     def test_thirteen_frozen_conditions_repeat_exactly(self):
         first = list(conditions(self.data))
@@ -115,7 +119,7 @@ class OfficialTestSubsetTests(unittest.TestCase):
     def test_subset_matches_the_official_labels(self):
         from evaluate_official_test import EXPECTED_IMAGES, _test_rows
 
-        rows = _test_rows(PROJECT / "data/GTSRB/raw/GT-final_test.csv")
+        rows = _test_rows(DATA_ROOT / "GT-final_test.csv")
         self.assertEqual(len(rows), sum(EXPECTED_IMAGES.values()))
         counts = {}
         for row in rows:
@@ -126,7 +130,7 @@ class OfficialTestSubsetTests(unittest.TestCase):
         self.assertTrue(all(row["split"] == "test" for row in rows))
 
     def test_training_split_never_contains_test_images(self):
-        with (PROJECT / "results/pilot_split.csv").open(encoding="utf-8-sig", newline="") as handle:
+        with SPLIT.open(encoding="utf-8-sig", newline="") as handle:
             training = {row["image"] for row in csv.DictReader(handle)}
         self.assertTrue(all(image.startswith("GTSRB/Final_Training/Images/") for image in training))
 

@@ -169,18 +169,20 @@ tar -czf a_linux_results.tgz \
 
 ## 12. 官方测试（全组方案冻结之后）
 
+以下默认命令只评估 A 的研究目录。
+
 ```bash
 bash A_LINUX.sh freeze     # 写出冻结清单，此时不要看测试分数
 bash A_LINUX.sh test7      # 打开测试分数
 ```
 
-若要把 B/C 的研究目录一起评，直接调用入口：
+全组正式测试使用单独的清单。将示例中的 B、C 路径替换为各自已验收的研究目录。
 
 ```bash
-python experiments/evaluate_official_test.py --init-freeze results/a_test7_freeze.json \
-  --study results/a_resnet18_linux_v1 --study results/c_study_xxx
-python experiments/evaluate_official_test.py --freeze results/a_test7_freeze.json \
-  --output results/a_test7_v1 --device cuda
+python experiments/evaluate_official_test.py --init-freeze results/a_test7_team_freeze.json \
+  --study results/a_resnet18_linux_v1 --study results/b_study_xxx --study results/c_study_xxx
+python experiments/evaluate_official_test.py --freeze results/a_test7_team_freeze.json \
+  --output results/a_test7_team_v1 --device cuda
 ```
 
 冻结后再改配置或权重，评估会拒绝运行。

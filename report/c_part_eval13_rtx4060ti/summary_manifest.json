@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "eval_artifact": "results/c_eval13_rtx4060ti_v1",
+  "eval_manifest_sha256": "598d584f070222acb484e753a7e6c9a1f271c3df447f63dbb61fe0b043fa27c7",
+  "runs": 15,
+  "conditions": 13,
+  "images_per_run_and_condition": 840,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "tables": {
+    "tables/dev13_by_run.csv": "cd10ec695d2f3a04406cc75d21f7a7c20402854859bb7438d84d3adf3ca690ae",
+    "tables/dev13_summary.csv": "7ea4296a0c7c4348ca9d4799b9b3c253747b3e5ddaa5edae9bd23c2c63afb438",
+    "tables/dev13_paired_augmentation.csv": "183d0e8af727caf1d45d4e1e446185eb4a4449643608e1926a743e715ffd057a",
+    "tables/dev13_families.csv": "4ec01fd757227f1a25335e7a40a9b2585d1c5ffac485038033318b3d5e262a76",
+    "tables/dev13_per_class.csv": "c1c5aaf779b24430696bdc0a7e3267e769a2a41e271934646389c3490bc6a95d",
+    "tables/dev13_costs.csv": "f086accc36c724693bc4f26f6852316f9d96e172bb2596b39f30275d900b36e4",
+    "tables/dev13_paired_fusion.csv": "4511ff2806d005da89f54ab9cf0f9216519d7709d5087f6c53905c9e914b03bf"
+  },
+  "figures": {
+    "figures/dev13_curves.png": "a333441170a905251e69024d17d03c32d99ba333da8d13448ccf95f0036061dd",
+    "figures/dev13_conditions.png": "a01327301741ca028cdab464de02a661e38befd150cddb72c5a224c572477d68",
+    "figures/dev13_families.png": "6c3e4c61637296b7f772bf8b805bd61b15df70a72eac216c259e0d81edaa82a5"
+  }
+}
