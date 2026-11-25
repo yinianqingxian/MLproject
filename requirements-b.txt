@@ -1,0 +1,12 @@
+# B 的新机器：对齐 A 基准环境的依赖
+#
+# 只有下面两项参与"像素生成"，必须与 A 的基准一致，否则指纹对不上：
+#   numpy 2.4.1 + opencv 5.0.0（pip 包名 opencv-python-headless，版本 5.0.0.93）
+# torch / torchvision 只影响训练速度与数值细节，不影响 32×32 像素，按机器的 CUDA 装即可。
+numpy==2.4.1
+opencv-python-headless==5.0.0.93
+scikit-learn==1.8.0
+matplotlib==3.10.9
+#
+# 安装后自检（必须打印 5.0.0 2.4.1）：
+#   python -c "import cv2, numpy; print(cv2.__version__, numpy.__version__)"
