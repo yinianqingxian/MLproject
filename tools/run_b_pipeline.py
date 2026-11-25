@@ -15,6 +15,7 @@
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -100,8 +101,13 @@ def step_check(args):
         print("GPU      :", properties.name,
               "| %.1f GiB" % (properties.total_memory / 1024 ** 3))
     else:
-        print("GPU      : 不可用（训练必须用 CUDA；本步骤仍可检查其余项目）")
+        print("GPU      : 不可用")
+    print("device   :", args.device,
+          "（CPU 也能跑，只是慢；一次训练约 350 步 × 单步耗时）" if args.device == "cpu" else "")
     print("cv2      :", cv2.__version__, "| numpy:", numpy.__version__)
+    if platform.system() == "Darwin":
+        print("核数     :", os.cpu_count(), "| Apple Silicon 请用 --device cpu，"
+              "MPS 不在公共训练入口的支持范围内")
 
     problems = []
     for name, expected in TARGET_VERSIONS.items():
@@ -153,20 +159,22 @@ def step_probe(args):
 
     from resnet_robustness_study import ResNet18Fusion
 
-    if not torch.cuda.is_available():
-        raise SystemExit("探针需要 CUDA。")
-    torch.set_num_threads(6)
+    device = args.device
+    if device == "cuda" and not torch.cuda.is_available():
+        raise SystemExit("指定了 --device cuda，但当前环境没有可用 CUDA。Mac 请用 --device cpu。")
+    torch.set_num_threads(args.threads)
     torch.use_deterministic_algorithms(True)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
+    if device == "cuda":
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
 
     model = ResNet18Fusion("single", pretrained=True, weights_path=WEIGHTS)
-    model = model.to(device="cuda", memory_format=torch.channels_last)
+    model = model.to(device=device, memory_format=torch.channels_last)
     model.train()
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
     criterion = torch.nn.CrossEntropyLoss()
-    images = torch.rand(128, 3, 32, 32).to(device="cuda", memory_format=torch.channels_last)
-    targets = torch.randint(0, 7, (128,), device="cuda")
+    images = torch.rand(128, 3, 32, 32).to(device=device, memory_format=torch.channels_last)
+    targets = torch.randint(0, 7, (128,), device=device)
 
     def one_step():
         loss = criterion(model(images), targets)
@@ -174,15 +182,20 @@ def step_probe(args):
         loss.backward()
         optimizer.step()
 
-    for _ in range(5):
+    # CPU 的每一步要几秒，减少重复次数，避免探针本身花掉几分钟。
+    warmup, repeats = (5, 10) if device == "cuda" else (1, 3)
+    for _ in range(warmup):
         one_step()
-    torch.cuda.synchronize()
-    samples = []
-    for _ in range(10):
+    if device == "cuda":
         torch.cuda.synchronize()
+    samples = []
+    for _ in range(repeats):
+        if device == "cuda":
+            torch.cuda.synchronize()
         started = time.perf_counter()
         one_step()
-        torch.cuda.synchronize()
+        if device == "cuda":
+            torch.cuda.synchronize()
         samples.append(time.perf_counter() - started)
     samples.sort()
     step_seconds = samples[len(samples) // 2]
@@ -211,9 +224,17 @@ def step_inputs(args):
     report = "results/b_input_diff.json"
     process = run([PYTHON, "tools/compare_inputs.py", "--reference", REFERENCE_EVAL,
                    "--candidate", output, "--json", report], check=False)
-    if process.returncode != 0:
-        raise SystemExit("输入未对齐，先解决上面的差异再训练（不要用这 12 组白跑）。")
-    print("\n13/13 一致，可以开始训练。")
+    if process.returncode == 0:
+        print("\n13/13 一致，可以开始训练。")
+        return
+    if not args.allow_pixel_mismatch:
+        raise SystemExit(
+            "输入未对齐，先解决上面的差异再训练。\n"
+            "如果这台机器和 A 不是同一平台（例如 Apple Silicon），像素可能无法逐像素对齐；\n"
+            "那种情况用 --allow-pixel-mismatch 继续：组内比较仍然有效，但跨成员差值要改由官方测试统一评估。")
+    print("\n警告：与 A 的基准不一致，按 --allow-pixel-mismatch 继续。")
+    print("     这不会影响同一台机器内部的组内比较（例如去噪 vs 不去噪）。")
+    print("     但它意味着：开发集上 A 与 B 的差值混入了环境因素，不能当作 CLAHE 的效应。")
 
 
 def step_train(args):
@@ -226,7 +247,8 @@ def step_train(args):
     for study, extra in plans:
         command = [PYTHON, "experiments/run_resnet_study.py", *extra,
                    "--seeds", "42", "43", "44", "--epochs", "10",
-                   "--device", "cuda", "--output-dir", study]
+                   "--threads", str(args.threads),
+                   "--device", args.device, "--output-dir", study]
         if (PROJECT / study).exists():
             print(f"{study} 已存在，使用 --resume 只补未完成的运行")
             command.append("--resume")
@@ -242,7 +264,7 @@ def step_eval(args):
             raise SystemExit(f"{study} 不存在或不完整，先跑 train。")
         output = free_name(output_slug)
         run([PYTHON, "experiments/evaluate_a13.py", "--study", study, "--output", output,
-             "--device", "cuda", "--expect-runs", str(expected)])
+             "--device", args.device, "--expect-runs", str(expected)])
 
     rows, predictions = 0, 0
     for slug in (CLAHE_EVAL, DENOISED_EVAL):
@@ -315,7 +337,20 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("step", choices=list(STEPS) + ["all"],
                         help="check → probe → inputs → train → eval → compare → package")
+    parser.add_argument("--device", choices=("auto", "cuda", "cpu"), default="auto",
+                        help="auto 时优先 CUDA；Apple Silicon 用 cpu（MPS 不在公共训练入口支持范围）")
+    parser.add_argument("--threads", type=int, default=6, help="CPU 线程数；Mac 上可以调到 8~12 提速")
+    parser.add_argument("--allow-pixel-mismatch", action="store_true",
+                        help="开发集条件与 A 不一致时仍继续（Mac/跨平台）；差异会写入 b_input_diff.json")
     args = parser.parse_args()
+    if args.threads < 1:
+        parser.error("--threads 必须是正整数")
+    if args.device == "auto":
+        try:
+            import torch
+            args.device = "cuda" if torch.cuda.is_available() else "cpu"
+        except ImportError:
+            args.device = "cpu"
     if args.step == "all":
         for name in ("check", "probe", "inputs", "train", "eval", "compare", "package"):
             STEPS[name](args)
