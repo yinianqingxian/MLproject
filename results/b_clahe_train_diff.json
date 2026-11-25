@@ -1,0 +1,77 @@
+{
+  "reference": "results\\a_local_v1",
+  "candidate": "results\\b_clahe",
+  "report": {
+    "split_sha256": {
+      "match": true
+    },
+    "data_fingerprint": {
+      "match": true
+    },
+    "source_files": {
+      "match": true,
+      "count": 3780
+    },
+    "extra_indices": {
+      "match": true
+    },
+    "augmentation_counts": {
+      "match": true
+    },
+    "generated": {
+      "compared": 8,
+      "different": 0,
+      "table": [
+        {
+          "split": "training/mixed",
+          "match": true,
+          "reference": "7ca36ca6461e",
+          "candidate": "7ca36ca6461e"
+        },
+        {
+          "split": "training/repeat_clean",
+          "match": true,
+          "reference": "14b18b18aeb1",
+          "candidate": "14b18b18aeb1"
+        },
+        {
+          "split": "training/targeted_motion",
+          "match": true,
+          "reference": "618df50fc361",
+          "candidate": "618df50fc361"
+        },
+        {
+          "split": "validation/clean",
+          "match": true,
+          "reference": "3b71bffa7023",
+          "candidate": "3b71bffa7023"
+        },
+        {
+          "split": "validation/dark",
+          "match": true,
+          "reference": "9e45c7960ab0",
+          "candidate": "9e45c7960ab0"
+        },
+        {
+          "split": "validation/jpeg",
+          "match": true,
+          "reference": "c14dcb19df9a",
+          "candidate": "c14dcb19df9a"
+        },
+        {
+          "split": "validation/motion",
+          "match": true,
+          "reference": "aee10a773302",
+          "candidate": "aee10a773302"
+        },
+        {
+          "split": "validation/noise",
+          "match": true,
+          "reference": "bfc6b7642fd1",
+          "candidate": "bfc6b7642fd1"
+        }
+      ]
+    }
+  },
+  "problems": []
+}

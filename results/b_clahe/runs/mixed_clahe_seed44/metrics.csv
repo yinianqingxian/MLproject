@@ -1,0 +1,6 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_clahe_seed44,44,mixed,clahe,validation,clean,none,0.9713545721553064,0.9714285714285714,840,11180103
+mixed_clahe_seed44,44,mixed,clahe,validation,motion,medium,0.8645627386483407,0.8702380952380953,840,11180103
+mixed_clahe_seed44,44,mixed,clahe,validation,noise,medium,0.852526824296725,0.8535714285714285,840,11180103
+mixed_clahe_seed44,44,mixed,clahe,validation,dark,medium,0.9531169242098028,0.9535714285714286,840,11180103
+mixed_clahe_seed44,44,mixed,clahe,validation,jpeg,medium,0.8073603683236733,0.8130952380952381,840,11180103

@@ -1,0 +1,130 @@
+{
+  "reference": "results\\a_eval13_local_v1",
+  "candidate": "results\\b_clahe_eval13",
+  "report": {
+    "split_sha256": {
+      "match": true
+    },
+    "images": {
+      "reference": 840,
+      "candidate": 840,
+      "same_set": true,
+      "same_order": true
+    },
+    "data_fingerprint": {
+      "match": true
+    },
+    "conditions": {
+      "compared": 13,
+      "same": 13,
+      "different": 0,
+      "table": [
+        {
+          "condition": "clean",
+          "severity": "none",
+          "parameter": null,
+          "match": true,
+          "reference": "3b71bffa7023",
+          "candidate": "3b71bffa7023"
+        },
+        {
+          "condition": "motion",
+          "severity": "low",
+          "parameter": 3,
+          "match": true,
+          "reference": "030dee053884",
+          "candidate": "030dee053884"
+        },
+        {
+          "condition": "motion",
+          "severity": "medium",
+          "parameter": 5,
+          "match": true,
+          "reference": "aee10a773302",
+          "candidate": "aee10a773302"
+        },
+        {
+          "condition": "motion",
+          "severity": "high",
+          "parameter": 7,
+          "match": true,
+          "reference": "aa2666a0ef06",
+          "candidate": "aa2666a0ef06"
+        },
+        {
+          "condition": "noise",
+          "severity": "low",
+          "parameter": 10,
+          "match": true,
+          "reference": "ac55064be821",
+          "candidate": "ac55064be821"
+        },
+        {
+          "condition": "noise",
+          "severity": "medium",
+          "parameter": 20,
+          "match": true,
+          "reference": "bfc6b7642fd1",
+          "candidate": "bfc6b7642fd1"
+        },
+        {
+          "condition": "noise",
+          "severity": "high",
+          "parameter": 30,
+          "match": true,
+          "reference": "ee5bfce7d9d3",
+          "candidate": "ee5bfce7d9d3"
+        },
+        {
+          "condition": "dark",
+          "severity": "low",
+          "parameter": 0.7,
+          "match": true,
+          "reference": "c8d238316343",
+          "candidate": "c8d238316343"
+        },
+        {
+          "condition": "dark",
+          "severity": "medium",
+          "parameter": 0.45,
+          "match": true,
+          "reference": "9e45c7960ab0",
+          "candidate": "9e45c7960ab0"
+        },
+        {
+          "condition": "dark",
+          "severity": "high",
+          "parameter": 0.25,
+          "match": true,
+          "reference": "7c0e0f629789",
+          "candidate": "7c0e0f629789"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "low",
+          "parameter": 40,
+          "match": true,
+          "reference": "92e968ae189c",
+          "candidate": "92e968ae189c"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "medium",
+          "parameter": 20,
+          "match": true,
+          "reference": "c14dcb19df9a",
+          "candidate": "c14dcb19df9a"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "high",
+          "parameter": 10,
+          "match": true,
+          "reference": "9ab8ebdcfd11",
+          "candidate": "9ab8ebdcfd11"
+        }
+      ]
+    }
+  },
+  "problems": []
+}

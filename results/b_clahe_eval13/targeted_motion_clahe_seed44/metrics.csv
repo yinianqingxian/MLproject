@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,clean,none,0.9646622020148029,0.9642857142857143,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,motion,low,0.9434182266039711,0.9428571428571428,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,motion,medium,0.8809287762608224,0.8797619047619047,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,motion,high,0.825211229682982,0.8214285714285714,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,noise,low,0.9074175785844435,0.905952380952381,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,noise,medium,0.7875495767199727,0.7904761904761904,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,noise,high,0.698518958977673,0.7047619047619048,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,dark,low,0.9681630150097421,0.9678571428571429,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,dark,medium,0.9625987068913906,0.9619047619047619,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,dark,high,0.8922813913115581,0.8892857142857142,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,jpeg,low,0.889872434029664,0.888095238095238,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,jpeg,medium,0.6910810318220689,0.6988095238095238,840,11180103
+targeted_motion_clahe_seed44,44,targeted_motion,clahe,validation,jpeg,high,0.4605538813558159,0.4738095238095238,840,11180103
