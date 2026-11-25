@@ -1,0 +1,135 @@
+{
+  "reference": "results\\a_eval13_local_v1",
+  "candidate": "C:\\Users\\Weisifengbuxi\\Desktop\\ML project\\给A_B输入核对_v2\\B_input_check_v2\\denoised_clahe",
+  "report": {
+    "split_sha256": {
+      "match": true
+    },
+    "images": {
+      "reference": 840,
+      "candidate": 840,
+      "same_order": true,
+      "same_set": true
+    },
+    "data_fingerprint": {
+      "match": false,
+      "reference": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+      "candidate": "4f3a1790496c27108f702365b47a6899f8c52d8d65585c03f986481666684af9"
+    },
+    "conditions": {
+      "compared": 13,
+      "same": 4,
+      "different": 9,
+      "table": [
+        {
+          "condition": "clean",
+          "severity": "none",
+          "parameter": null,
+          "match": false,
+          "reference": "3b71bffa7023",
+          "candidate": "e389f327de3a"
+        },
+        {
+          "condition": "motion",
+          "severity": "low",
+          "parameter": 3,
+          "match": false,
+          "reference": "030dee053884",
+          "candidate": "913bfbe3d589"
+        },
+        {
+          "condition": "motion",
+          "severity": "medium",
+          "parameter": 5,
+          "match": false,
+          "reference": "aee10a773302",
+          "candidate": "f30561bdc01d"
+        },
+        {
+          "condition": "motion",
+          "severity": "high",
+          "parameter": 7,
+          "match": false,
+          "reference": "aa2666a0ef06",
+          "candidate": "1ab7c6173dc8"
+        },
+        {
+          "condition": "noise",
+          "severity": "low",
+          "parameter": 10,
+          "match": false,
+          "reference": "ac55064be821",
+          "candidate": "bf7bcd572388"
+        },
+        {
+          "condition": "noise",
+          "severity": "medium",
+          "parameter": 20,
+          "match": false,
+          "reference": "bfc6b7642fd1",
+          "candidate": "5330c37376a2"
+        },
+        {
+          "condition": "noise",
+          "severity": "high",
+          "parameter": 30,
+          "match": false,
+          "reference": "ee5bfce7d9d3",
+          "candidate": "b3c1bac35804"
+        },
+        {
+          "condition": "dark",
+          "severity": "low",
+          "parameter": 0.7,
+          "match": false,
+          "reference": "c8d238316343",
+          "candidate": "269b63a79aae"
+        },
+        {
+          "condition": "dark",
+          "severity": "medium",
+          "parameter": 0.45,
+          "match": false,
+          "reference": "9e45c7960ab0",
+          "candidate": "b4e3fb56d6fe"
+        },
+        {
+          "condition": "dark",
+          "severity": "high",
+          "parameter": 0.25,
+          "match": true,
+          "reference": "7c0e0f629789",
+          "candidate": "7c0e0f629789"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "low",
+          "parameter": 40,
+          "match": true,
+          "reference": "92e968ae189c",
+          "candidate": "92e968ae189c"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "medium",
+          "parameter": 20,
+          "match": true,
+          "reference": "c14dcb19df9a",
+          "candidate": "c14dcb19df9a"
+        },
+        {
+          "condition": "jpeg",
+          "severity": "high",
+          "parameter": 10,
+          "match": true,
+          "reference": "9ab8ebdcfd11",
+          "candidate": "9ab8ebdcfd11"
+        }
+      ]
+    }
+  },
+  "problems": [
+    "整体 data_fingerprint 不同（生成像素不一致）",
+    "13 个条件里有 9 个像素不一致"
+  ]
+}
