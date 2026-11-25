@@ -76,8 +76,14 @@ B 的 `conditions.json` 还缺少 `scope` 字段，说明它是**用较早或不
 3. 重新 `python experiments/evaluate_a13.py --prepare-only --device cpu --output <新目录>`；
 4. 再跑一次 `tools/compare_inputs.py`。
 
-若这样仍不一致，说明同版本号在不同平台上的构建仍有差异，Mac 与 Windows 无法逐像素对齐，
-那就只能采用路线 B，或把 B 的 12 组在 A 的环境里重训。
+**已实测确认（2026-11-25）**：B 在 macOS 上把 OpenCV 降到 5.0.0（与 A 完全相同的版本号）后重跑，
+`validation/clean` 仍是 `e389f327de3a`，与他在 5.1.0 下的结果逐位相同；而 A 在 Windows 5.0.0 上是
+`3b71bffa7023`。结论：**差异来自 macOS arm64 与 Windows x64 的 OpenCV 构建（INTER_AREA 的 SIMD/定点实现），
+与版本号无关，无法通过钉版本解决**。
+
+因此路线 A 在 Mac 上不可行。要得到可配对的开发集结果，只有两条路：
+把 B 的 12 组放到与 A 相同的 Windows 环境运行（4060 级显卡约 47 分钟），
+或者接受开发集跨成员差值混入环境因素、把正式对照放到官方测试。
 
 ### 路线 B：不做开发集跨成员配对，把正式对照放到官方测试（不需要 B 重训）
 
