@@ -1,11 +1,12 @@
 """
-用途：核对两个成员是否真的用了同一批开发集输入（条件指纹与图像清单）。
+用途：核对两个成员是否真的用了同一批输入——既比评估条件，也比训练像素。
 核心职责：
 - 比较 images.csv 的图像集合、顺序、标签与轨迹。
 - 比较 conditions.json 的划分指纹、条件参数和每个条件的像素 SHA256。
-- 也接受训练研究目录，比较 run_config.json 与 data_manifest.json 的数据指纹。
+- 比较 data_manifest.json 的源图像哈希、增强索引、增强数量和各 split 的生成指纹。
+- 同一目录里同时有评估清单和训练清单时，一次性比完两项。
 关键副作用/安全约束：
-- 只读两个目录，不生成图像、不加载模型、不需要 OpenCV 或 GPU。
+- 只读两个目录，不生成图像、不加载模型、不需要 OpenCV、NumPy 或 GPU。
 """
 
 import argparse
@@ -26,146 +27,192 @@ def read_images(path):
             for row in rows]
 
 
-def load_conditions(directory):
-    """Accept an evaluation directory or a study directory and normalise what we can compare."""
+def load(directory):
+    """Read whatever an evaluation directory and/or a study directory provides."""
     directory = Path(directory)
+    result = {
+        "kind": [], "images": None, "levels": None, "noise_seed": None, "entries": [],
+        "data_fingerprint": None, "split_sha256": None,
+        "generated": None, "extra_indices": None, "augmentation_counts": None,
+        "source_files": None,
+    }
+
     conditions_path = directory / "conditions.json"
-    images_path = directory / "images.csv"
     if conditions_path.is_file():
         payload = read_json(conditions_path)
-        return {
-            "kind": "evaluation",
-            "conditions": payload,
-            "images": read_images(images_path) if images_path.is_file() else None,
-            "data_fingerprint": payload.get("data_fingerprint"),
-            "split_sha256": payload.get("split_sha256"),
-            "levels": payload.get("levels"),
-            "noise_seed": payload.get("noise_seed"),
-            "entries": payload.get("conditions", []),
-        }
+        result["kind"].append("evaluation")
+        result["levels"] = payload.get("levels")
+        result["noise_seed"] = payload.get("noise_seed")
+        result["entries"] = payload.get("conditions", [])
+        result["data_fingerprint"] = payload.get("data_fingerprint")
+        result["split_sha256"] = payload.get("split_sha256")
+        images_path = directory / "images.csv"
+        if images_path.is_file():
+            result["images"] = read_images(images_path)
+
     run_config = directory / "run_config.json"
     if run_config.is_file():
         common = read_json(run_config)["common"]
-        manifest = read_json(directory / "data_manifest.json")
-        return {
-            "kind": "study",
-            "conditions": None,
-            "images": None,
-            "data_fingerprint": common.get("data_fingerprint"),
-            "split_sha256": common.get("split_sha256"),
-            "levels": None,
-            "noise_seed": None,
-            "entries": [],
-            "generated": manifest.get("generated_fingerprints", {}),
-        }
-    raise SystemExit(f"{directory} 既没有 conditions.json 也没有 run_config.json")
+        result["kind"].append("study")
+        result["data_fingerprint"] = result["data_fingerprint"] or common.get("data_fingerprint")
+        result["split_sha256"] = result["split_sha256"] or common.get("split_sha256")
+
+    manifest_path = directory / "data_manifest.json"
+    if manifest_path.is_file():
+        manifest = read_json(manifest_path)
+        result["kind"].append("manifest")
+        result["generated"] = manifest.get("generated_fingerprints")
+        result["extra_indices"] = manifest.get("extra_indices")
+        result["augmentation_counts"] = manifest.get("augmentation_counts")
+        result["source_files"] = manifest.get("source_files")
+        result["data_fingerprint"] = result["data_fingerprint"] or manifest.get("data_fingerprint")
+
+    if not result["kind"]:
+        raise SystemExit(f"{directory} 里没有 conditions.json / run_config.json / data_manifest.json")
+    return result
 
 
 def compare(reference, candidate):
     problems = []
     report = {}
 
-    if reference["split_sha256"] != candidate["split_sha256"]:
+    def same(name, left, right):
+        if left is None or right is None:
+            return None
+        match = left == right
+        report[name] = {"match": match}
+        return match
+
+    if same("split_sha256", reference["split_sha256"], candidate["split_sha256"]) is False:
         problems.append("划分文件指纹不同：两边的 pilot_split.csv 不是同一份")
-        report["split_sha256"] = {"reference": reference["split_sha256"],
-                                  "candidate": candidate["split_sha256"], "match": False}
-    else:
-        report["split_sha256"] = {"match": True}
 
     if reference["images"] is not None and candidate["images"] is not None:
-        same_order = reference["images"] == candidate["images"]
-        same_set = set(reference["images"]) == set(candidate["images"])
-        report["images"] = {
-            "reference": len(reference["images"]),
-            "candidate": len(candidate["images"]),
-            "same_order": same_order,
-            "same_set": same_set,
-        }
+        left, right = reference["images"], candidate["images"]
+        same_set = set(left) == set(right)
+        report["images"] = {"reference": len(left), "candidate": len(right),
+                            "same_set": same_set, "same_order": left == right}
         if not same_set:
-            missing = sorted(set(reference["images"]) - set(candidate["images"]))[:5]
-            extra = sorted(set(candidate["images"]) - set(reference["images"]))[:5]
-            problems.append(f"图像清单不同：缺 {len(set(reference['images']) - set(candidate['images']))} 张，"
-                            f"多 {len(set(candidate['images']) - set(reference['images']))} 张")
-            report["images"]["missing_examples"] = missing
-            report["images"]["extra_examples"] = extra
-        elif not same_order:
+            missing = len(set(left) - set(right))
+            extra = len(set(right) - set(left))
+            problems.append(f"图像清单不同：缺 {missing} 张，多 {extra} 张")
+            report["images"]["missing_examples"] = sorted(set(left) - set(right))[:5]
+            report["images"]["extra_examples"] = sorted(set(right) - set(left))[:5]
+        elif left != right:
             problems.append("图像集合相同但顺序不同：逐图对齐会错位")
 
-    if reference["levels"] != candidate["levels"] and candidate["levels"] is not None:
-        problems.append("条件参数表不同")
-    if reference["noise_seed"] != candidate["noise_seed"] and candidate["noise_seed"] is not None:
-        problems.append("噪声种子不同")
+    if reference["levels"] is not None and candidate["levels"] is not None:
+        if reference["levels"] != candidate["levels"]:
+            problems.append("条件参数表不同")
+        if reference["noise_seed"] != candidate["noise_seed"]:
+            problems.append("噪声种子不同")
 
-    if reference["data_fingerprint"] and candidate["data_fingerprint"]:
-        match = reference["data_fingerprint"] == candidate["data_fingerprint"]
-        report["data_fingerprint"] = {"match": match,
-                                      "reference": reference["data_fingerprint"],
-                                      "candidate": candidate["data_fingerprint"]}
-        if not match:
-            problems.append("整体 data_fingerprint 不同（生成像素不一致）")
+    if same("data_fingerprint", reference["data_fingerprint"], candidate["data_fingerprint"]) is False:
+        problems.append("整体 data_fingerprint 不同（生成像素不一致）")
 
     if reference["entries"] and candidate["entries"]:
-        candidate_index = {(entry["condition"], entry["severity"]): entry
-                           for entry in candidate["entries"]}
-        table, mismatches = [], 0
+        index = {(entry["condition"], entry["severity"]): entry for entry in candidate["entries"]}
+        table, mismatch = [], 0
         for entry in reference["entries"]:
             key = (entry["condition"], entry["severity"])
-            other = candidate_index.get(key)
-            same = other is not None and other.get("pixel_sha256") == entry.get("pixel_sha256")
-            if not same:
-                mismatches += 1
-            table.append({
-                "condition": key[0], "severity": key[1],
-                "parameter": entry.get("parameter"),
-                "match": same,
-                "reference": (entry.get("pixel_sha256") or "")[:12],
-                "candidate": ((other or {}).get("pixel_sha256") or "-")[:12],
-            })
-        report["conditions"] = {"compared": len(table), "same": len(table) - mismatches,
-                                "different": mismatches, "table": table}
-        if mismatches:
-            problems.append(f"13 个条件里有 {mismatches} 个像素不一致")
-    elif reference["entries"] and candidate["kind"] == "study":
-        problems.append("对方只提供了训练目录，没有开发集 conditions.json，无法逐条件比对")
+            other = index.get(key)
+            ok = other is not None and other.get("pixel_sha256") == entry.get("pixel_sha256")
+            mismatch += 0 if ok else 1
+            table.append({"condition": key[0], "severity": key[1], "parameter": entry.get("parameter"),
+                          "match": ok, "reference": (entry.get("pixel_sha256") or "")[:12],
+                          "candidate": ((other or {}).get("pixel_sha256") or "-")[:12]})
+        report["conditions"] = {"compared": len(table), "same": len(table) - mismatch,
+                                "different": mismatch, "table": table}
+        if mismatch:
+            problems.append(f"13 个条件里有 {mismatch} 个像素不一致")
 
+    if reference["source_files"] and candidate["source_files"]:
+        if reference["source_files"] == candidate["source_files"]:
+            report["source_files"] = {"match": True, "count": len(reference["source_files"])}
+        else:
+            report["source_files"] = {"match": False}
+            problems.append("源图像 sha256 列表不同：两边的 GTSRB 原始文件不是同一份")
+    if same("extra_indices", reference["extra_indices"], candidate["extra_indices"]) is False:
+        problems.append("增强样本索引不同（随机序列没有复现）")
+    if same("augmentation_counts", reference["augmentation_counts"],
+            candidate["augmentation_counts"]) is False:
+        problems.append("增强数量分配不同")
+
+    if reference["generated"] and candidate["generated"]:
+        rows, mismatch = [], 0
+        for key in sorted(set(reference["generated"]) | set(candidate["generated"])):
+            left = reference["generated"].get(key)
+            right = candidate["generated"].get(key)
+            ok = left == right and left is not None
+            mismatch += 0 if ok else 1
+            rows.append({"split": key, "match": ok,
+                         "reference": (left or "-")[:12], "candidate": (right or "-")[:12]})
+        report["generated"] = {"compared": len(rows), "different": mismatch, "table": rows}
+        if mismatch:
+            problems.append(f"训练/验证的 {mismatch} 个 split 生成指纹不同")
     return report, problems
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--reference", type=Path, required=True, help="基准目录，例如 results/a_eval13_local_v1")
-    parser.add_argument("--candidate", type=Path, required=True, help="待核对的另一个成员的目录")
-    parser.add_argument("--json", type=Path, help="把完整结果写到这个文件")
-    args = parser.parse_args(argv)
-
-    reference = load_conditions(args.reference)
-    candidate = load_conditions(args.candidate)
-    report, problems = compare(reference, candidate)
-
-    print(f"基准：{args.reference}（{reference['kind']}）")
-    print(f"对照：{args.candidate}（{candidate['kind']}）")
+def print_report(reference_dir, candidate_dir, reference, candidate, report, problems):
+    print(f"基准：{reference_dir}（{' + '.join(reference['kind'])}）")
+    print(f"对照：{candidate_dir}（{' + '.join(candidate['kind'])}）")
     print()
-    print("划分指纹：" + ("一致" if report.get("split_sha256", {}).get("match") else "不一致"))
+
+    def line(label, key, text=None):
+        if key in report:
+            print(f"{label}：{text or ('一致' if report[key]['match'] else '不一致')}")
+
+    line("划分指纹", "split_sha256")
     if "images" in report:
         info = report["images"]
         print(f"图像清单：{info['reference']} vs {info['candidate']} 张，"
               f"集合{'一致' if info['same_set'] else '不同'}，"
               f"顺序{'一致' if info['same_order'] else '不同'}")
+    if report.get("source_files"):
+        print(f"源图像哈希：{'一致' if report['source_files']['match'] else '不同'}"
+              f"（{report['source_files'].get('count', '-')} 条）")
+    line("增强索引", "extra_indices")
+    line("增强数量", "augmentation_counts")
+    line("整体 data_fingerprint", "data_fingerprint")
+
     if "conditions" in report:
         info = report["conditions"]
         print(f"条件像素：{info['same']}/{info['compared']} 一致")
+        if info["different"]:
+            print()
+            print(f"{'条件':<10}{'强度':<8}{'参数':<8}{'结果':<6}{'基准':<14}{'对照':<14}")
+            for row in info["table"]:
+                if not row["match"]:
+                    print(f"{row['condition']:<10}{row['severity']:<8}{str(row['parameter']):<8}"
+                          f"{'不同':<6}{row['reference']:<14}{row['candidate']:<14}")
+    if "generated" in report:
+        info = report["generated"]
         print()
-        print(f"{'条件':<10}{'强度':<8}{'参数':<8}{'结果':<6}{'基准':<14}{'对照':<14}")
+        print(f"{'split':<26}{'结果':<6}{'基准':<14}{'对照':<14}")
         for row in info["table"]:
-            print(f"{row['condition']:<10}{row['severity']:<8}{str(row['parameter']):<8}"
-                  f"{'一致' if row['match'] else '不同':<6}{row['reference']:<14}{row['candidate']:<14}")
+            print(f"{row['split']:<26}{'一致' if row['match'] else '不同':<6}"
+                  f"{row['reference']:<14}{row['candidate']:<14}")
+
     print()
     if problems:
-        print("结论：**不能直接配对**")
+        print("结论：**不能配对**")
         for item in problems:
             print("  - " + item)
     else:
-        print("结论：输入一致，可以配对比较。")
+        print("结论：输入一致，可以配对。")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--reference", type=Path, required=True,
+                        help="基准目录。评估条件用 results/a_eval13_local_v1，训练像素用 results/a_local_v1")
+    parser.add_argument("--candidate", type=Path, required=True, help="待核对的另一个成员的目录")
+    parser.add_argument("--json", type=Path, help="把完整结果写到这个文件")
+    args = parser.parse_args(argv)
+
+    reference = load(args.reference)
+    candidate = load(args.candidate)
+    report, problems = compare(reference, candidate)
+    print_report(args.reference, args.candidate, reference, candidate, report, problems)
 
     if args.json:
         Path(args.json).write_text(

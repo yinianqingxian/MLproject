@@ -1,0 +1,80 @@
+{
+  "reference": "results\\a_local_v1",
+  "candidate": "C:\\Users\\Weisifengbuxi\\Desktop\\ML project\\给A_B输入核对_v2\\B_input_check_v2\\clahe",
+  "report": {
+    "split_sha256": {
+      "match": true
+    },
+    "data_fingerprint": {
+      "match": false
+    },
+    "source_files": {
+      "match": true,
+      "count": 3780
+    },
+    "extra_indices": {
+      "match": true
+    },
+    "augmentation_counts": {
+      "match": true
+    },
+    "generated": {
+      "compared": 8,
+      "different": 7,
+      "table": [
+        {
+          "split": "training/mixed",
+          "match": false,
+          "reference": "7ca36ca6461e",
+          "candidate": "461187b62881"
+        },
+        {
+          "split": "training/repeat_clean",
+          "match": false,
+          "reference": "14b18b18aeb1",
+          "candidate": "8a2167668282"
+        },
+        {
+          "split": "training/targeted_motion",
+          "match": false,
+          "reference": "618df50fc361",
+          "candidate": "8120d66890fe"
+        },
+        {
+          "split": "validation/clean",
+          "match": false,
+          "reference": "3b71bffa7023",
+          "candidate": "e389f327de3a"
+        },
+        {
+          "split": "validation/dark",
+          "match": false,
+          "reference": "9e45c7960ab0",
+          "candidate": "b4e3fb56d6fe"
+        },
+        {
+          "split": "validation/jpeg",
+          "match": true,
+          "reference": "c14dcb19df9a",
+          "candidate": "c14dcb19df9a"
+        },
+        {
+          "split": "validation/motion",
+          "match": false,
+          "reference": "aee10a773302",
+          "candidate": "f30561bdc01d"
+        },
+        {
+          "split": "validation/noise",
+          "match": false,
+          "reference": "bfc6b7642fd1",
+          "candidate": "5330c37376a2"
+        }
+      ]
+    }
+  },
+  "problems": [
+    "整体 data_fingerprint 不同（生成像素不一致）",
+    "训练/验证的 7 个 split 生成指纹不同"
+  ]
+}
