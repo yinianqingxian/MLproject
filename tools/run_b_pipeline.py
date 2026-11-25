@@ -271,11 +271,11 @@ def step_eval(args):
         base = PROJECT / slug
         if not base.is_dir():
             continue
-        for run in base.iterdir():
-            if run.is_dir() and (run / "metrics.csv").is_file():
-                with (run / "metrics.csv").open(encoding="utf-8") as handle:
+        for run_dir in base.iterdir():
+            if run_dir.is_dir() and (run_dir / "metrics.csv").is_file():
+                with (run_dir / "metrics.csv").open(encoding="utf-8") as handle:
                     rows += max(0, sum(1 for _ in handle) - 1)
-                with (run / "predictions.csv").open(encoding="utf-8") as handle:
+                with (run_dir / "predictions.csv").open(encoding="utf-8") as handle:
                     predictions += max(0, sum(1 for _ in handle) - 1)
     print(f"\n指标行 {rows}（应为 156）| 逐图预测 {predictions}（应为 131,040）")
     if (rows, predictions) != (156, 131040):
