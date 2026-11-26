@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,clean,none,0.9714298106846159,0.9714285714285714,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,motion,low,0.9522020965140056,0.9523809523809523,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,motion,medium,0.9056678588205251,0.905952380952381,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,motion,high,0.8159343196422123,0.8154761904761905,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,noise,low,0.9510848225431757,0.9511904761904761,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,noise,medium,0.8960303933030003,0.8952380952380953,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,noise,high,0.8503247510478973,0.85,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,dark,low,0.966600489325085,0.9666666666666667,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,dark,medium,0.9642229020220217,0.9642857142857143,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,dark,high,0.9335563526948958,0.9333333333333333,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,jpeg,low,0.9346651856195578,0.9345238095238095,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,jpeg,medium,0.789620283731131,0.7892857142857143,840,11181128
+mixed_dual_spatial_seed44,44,mixed,dual_spatial,validation,jpeg,high,0.6025753528807382,0.6190476190476191,840,11181128

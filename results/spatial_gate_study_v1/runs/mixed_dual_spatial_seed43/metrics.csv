@@ -1,0 +1,6 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_dual_spatial_seed43,43,mixed,dual_spatial,validation,clean,none,0.9679596807067267,0.9678571428571429,840,11181128
+mixed_dual_spatial_seed43,43,mixed,dual_spatial,validation,motion,medium,0.842034271177076,0.8369047619047619,840,11181128
+mixed_dual_spatial_seed43,43,mixed,dual_spatial,validation,noise,medium,0.8336948490008848,0.8357142857142857,840,11181128
+mixed_dual_spatial_seed43,43,mixed,dual_spatial,validation,dark,medium,0.9798331448118744,0.9797619047619047,840,11181128
+mixed_dual_spatial_seed43,43,mixed,dual_spatial,validation,jpeg,medium,0.7414139671048924,0.7511904761904762,840,11181128

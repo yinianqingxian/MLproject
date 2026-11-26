@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,clean,none,0.9431862765920532,0.9416666666666667,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,motion,low,0.8571339915100892,0.8464285714285714,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,motion,medium,0.6720871061270796,0.6464285714285715,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,motion,high,0.6269257297773266,0.6142857142857143,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,noise,low,0.9125674125923383,0.9119047619047619,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,noise,medium,0.8334019608623512,0.8333333333333334,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,noise,high,0.772121591017308,0.7702380952380953,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,dark,low,0.9519452833894889,0.9511904761904761,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,dark,medium,0.9341676234603284,0.9333333333333333,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,dark,high,0.8829220758363029,0.8869047619047619,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,jpeg,low,0.820449316490033,0.8119047619047619,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,jpeg,medium,0.5945678773937136,0.5952380952380952,840,11181128
+mixed_dual_denoised_seed44,44,mixed,dual_denoised,validation,jpeg,high,0.34039410797804914,0.36428571428571427,840,11181128

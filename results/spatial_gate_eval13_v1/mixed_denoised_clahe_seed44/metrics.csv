@@ -1,0 +1,14 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,clean,none,0.9833302292733797,0.9833333333333333,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,motion,low,0.9773784141641474,0.9773809523809524,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,motion,medium,0.9148529605749671,0.9142857142857143,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,motion,high,0.8334102352483904,0.8333333333333334,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,noise,low,0.9677839467436593,0.9678571428571429,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,noise,medium,0.9069872688811591,0.9071428571428571,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,noise,high,0.8193748994271903,0.819047619047619,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,dark,low,0.9880847788517004,0.9880952380952381,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,dark,medium,0.9809109954859544,0.9809523809523809,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,dark,high,0.971587586410809,0.9714285714285714,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,jpeg,low,0.9524007926428265,0.9523809523809523,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,jpeg,medium,0.8265541728196882,0.8273809523809523,840,11180103
+mixed_denoised_clahe_seed44,44,mixed,denoised_clahe,validation,jpeg,high,0.6265725059197541,0.6357142857142857,840,11180103
