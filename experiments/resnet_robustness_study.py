@@ -106,7 +106,7 @@ class ResNet18Fusion(nn.Module):
 
     def __init__(self, fusion="single", pretrained=True, weights_path=None):
         super().__init__()
-        if fusion not in ("single", "learned", "fixed"):
+        if fusion not in ("single", "learned", "fixed", "spatial"):
             raise ValueError(f"Unknown fusion mode: {fusion}")
         if not isinstance(pretrained, bool):
             raise ValueError("pretrained must be an explicit boolean")
@@ -121,12 +121,58 @@ class ResNet18Fusion(nn.Module):
             self.encoder.load_state_dict(state, strict=True)
         self.encoder.fc = nn.Identity()
         self.classifier = nn.Linear(self.feature_dim, len(CLASSES))
-        self.gate = nn.Linear(self.feature_dim * 2, 1) if fusion == "learned" else None
+        if fusion == "learned":
+            # One weight per image, computed from the pooled 1024-dimensional vector.
+            self.gate = nn.Linear(self.feature_dim * 2, 1)
+        elif fusion == "spatial":
+            # One weight per position: a 1x1 convolution over the [N, 1024, 7, 7] map.
+            self.gate = nn.Conv2d(self.feature_dim * 2, 1, kernel_size=1)
+        else:
+            self.gate = None
         if self.gate is not None:
+            # Zero initialisation keeps the initial weight map at exactly 0.5 everywhere.
             nn.init.zeros_(self.gate.weight)
             nn.init.zeros_(self.gate.bias)
 
-    def forward_details(self, image, enhanced=None, gate_override=None):
+    def _layer4_map(self, batch):
+        """Encoder output before global average pooling: [N, feature_dim, 7, 7]."""
+        encoder = self.encoder
+        x = self.preprocess(batch)
+        x = encoder.conv1(x)
+        x = encoder.bn1(x)
+        x = encoder.relu(x)
+        x = encoder.maxpool(x)
+        x = encoder.layer1(x)
+        x = encoder.layer2(x)
+        x = encoder.layer3(x)
+        return encoder.layer4(x)
+
+    def _spatial_details(self, image, enhanced, gate_override, spatial_average):
+        if enhanced is None or image.shape != enhanced.shape:
+            raise ValueError("Fusion requires paired views of equal shape")
+        raw_map, enhanced_map = self._layer4_map(torch.cat((image, enhanced))).chunk(2)
+        weight_map = torch.sigmoid(self.gate(torch.cat((raw_map, enhanced_map), dim=1)))
+        if gate_override is not None:
+            value = float(gate_override)
+            if not math.isfinite(value) or not 0 <= value <= 1:
+                raise ValueError("Gate override must be finite and within [0, 1]")
+            weight_map = torch.full_like(weight_map, value)
+        elif spatial_average:
+            # Intervention: replace every position by that image's own mean weight.
+            weight_map = weight_map.mean(dim=(2, 3), keepdim=True).expand_as(weight_map)
+        features = ((1 - weight_map) * raw_map + weight_map * enhanced_map).mean(dim=(2, 3))
+        return {
+            "logits": self.classifier(features),
+            "features": features,
+            "raw_features": raw_map.mean(dim=(2, 3)),
+            "enhanced_features": enhanced_map.mean(dim=(2, 3)),
+            "gate": weight_map.mean(dim=(2, 3)).reshape(len(weight_map), 1),
+            "gate_map": weight_map,
+        }
+
+    def forward_details(self, image, enhanced=None, gate_override=None, spatial_average=False):
+        if self.fusion == "spatial":
+            return self._spatial_details(image, enhanced, gate_override, spatial_average)
         if self.fusion == "single":
             if enhanced is not None or gate_override is not None:
                 raise ValueError("A single branch accepts one view and no gate override")

@@ -29,6 +29,7 @@ INPUT_MODES = {
     "dual": ("learned", ("raw", "clahe")),
     "fixed": ("fixed", ("raw", "clahe")),
     "dual_denoised": ("learned", ("raw", "denoised_clahe")),
+    "dual_spatial": ("spatial", ("raw", "denoised_clahe")),
 }
 METRIC_FIELDS = (
     "run_id", "seed", "augmentation", "input", "split", "condition", "severity",
