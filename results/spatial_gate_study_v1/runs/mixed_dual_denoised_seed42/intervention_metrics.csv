@@ -1,0 +1,16 @@
+run_id,seed,augmentation,input,split,condition,severity,macro_f1,accuracy,n_images,parameters,gate_override
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,clean,none,0.9383004285106581,0.9380952380952381,840,11181128,0.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,motion,medium,0.6439436104731013,0.6476190476190476,840,11181128,0.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,noise,medium,0.8207565746637127,0.819047619047619,840,11181128,0.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,dark,medium,0.7586897594853843,0.7714285714285715,840,11181128,0.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,jpeg,medium,0.6871956201052546,0.6892857142857143,840,11181128,0.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,clean,none,0.9610165607788702,0.9607142857142857,840,11181128,0.5
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,motion,medium,0.7204625565403452,0.7154761904761905,840,11181128,0.5
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,noise,medium,0.8247054305523772,0.8285714285714286,840,11181128,0.5
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,dark,medium,0.9021187346720243,0.9023809523809524,840,11181128,0.5
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,jpeg,medium,0.6845462748145247,0.6964285714285714,840,11181128,0.5
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,clean,none,0.9336573093346237,0.9321428571428572,840,11181128,1.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,motion,medium,0.670747074843569,0.669047619047619,840,11181128,1.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,noise,medium,0.7835502991534692,0.7916666666666666,840,11181128,1.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,dark,medium,0.8951655979837584,0.8964285714285715,840,11181128,1.0
+mixed_dual_denoised_seed42,42,mixed,dual_denoised,validation,jpeg,medium,0.6415184512991648,0.6654761904761904,840,11181128,1.0

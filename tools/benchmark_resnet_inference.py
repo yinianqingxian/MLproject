@@ -81,14 +81,15 @@ def main():
         if raw_config["seed"] != config["seed"]:
             raise ValueError("Match the single-branch training seed to the fusion checkpoint")
 
-    def init_model(kind, checkpoint):
-        model = ResNet18Fusion(kind, pretrained=False)
+    def init_model(kind, checkpoint, pooling):
+        model = ResNet18Fusion(kind, pretrained=False, pooling=pooling)
         model.load_state_dict(checkpoint, strict=True)
         return model.to(device=device, memory_format=torch.channels_last).eval()
 
-    fusion = init_model("learned", state)
-    single = init_model("single", single_state)
-    raw = init_model("single", raw_state) if args.raw_run else single
+    pooling = config.get("pooling", "gap")
+    fusion = init_model("learned", state, pooling)
+    single = init_model("single", single_state, pooling)
+    raw = init_model("single", raw_state, raw_config.get("pooling", "gap")) if args.raw_run else single
     models = {"raw": raw, "clahe": single, "dual": fusion}
     classes = config["classes"]
     rows = data["validation_rows"]

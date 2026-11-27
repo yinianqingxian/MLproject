@@ -39,6 +39,7 @@ DEFAULT_WEIGHTS_PATH = PROJECT / "assets/weights/resnet18-f37072fd.pth"
 WEIGHTS_ID = "ResNet18_Weights.IMAGENET1K_V1"
 OFFICIAL_WEIGHTS_SHA256 = "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
 BACKBONE = "torchvision.models.resnet18"
+POOLING_MODES = ("gap", "avgmax")
 
 
 def _torchvision():
@@ -99,34 +100,100 @@ def _validate_weight_config(config):
             raise ValueError(f"ResNet18 provenance mismatch: {name}")
 
 
+class AvgMaxPool2d(nn.Module):
+    """Each output is the mean of the global average and maximum responses."""
+
+    def forward(self, x):
+        average = x.mean(dim=(2, 3), keepdim=True)
+        maximum = x.amax(dim=(2, 3), keepdim=True)
+        return 0.5 * (average + maximum)
+
+
 class ResNet18Fusion(nn.Module):
     """Official shared ResNet18 followed by the existing seven-class fusion head."""
 
     feature_dim = 512
 
-    def __init__(self, fusion="single", pretrained=True, weights_path=None):
+    def __init__(self, fusion="single", pretrained=True, weights_path=None, pooling="gap"):
         super().__init__()
-        if fusion not in ("single", "learned", "fixed"):
+        if fusion not in ("single", "learned", "fixed", "spatial"):
             raise ValueError(f"Unknown fusion mode: {fusion}")
+        if pooling not in POOLING_MODES:
+            raise ValueError(f"Unknown pooling mode: {pooling}")
         if not isinstance(pretrained, bool):
             raise ValueError("pretrained must be an explicit boolean")
         if not pretrained and weights_path is not None:
             raise ValueError("Untrained smoke runs cannot declare a pretrained weights path")
         vision = _torchvision()
         self.fusion = fusion
+        self.pooling = pooling
         self.preprocess = vision.models.ResNet18_Weights.IMAGENET1K_V1.transforms()
         self.encoder = vision.models.resnet18(weights=None)
         if pretrained:
             state = torch.load(resolve_weights_path(weights_path), map_location="cpu", weights_only=True)
             self.encoder.load_state_dict(state, strict=True)
         self.encoder.fc = nn.Identity()
+        if pooling == "avgmax":
+            self.encoder.avgpool = AvgMaxPool2d()
         self.classifier = nn.Linear(self.feature_dim, len(CLASSES))
-        self.gate = nn.Linear(self.feature_dim * 2, 1) if fusion == "learned" else None
+        if fusion == "learned":
+            # One weight per image, computed from the pooled 1024-dimensional vector.
+            self.gate = nn.Linear(self.feature_dim * 2, 1)
+        elif fusion == "spatial":
+            # One weight per position: a 1x1 convolution over the [N, 1024, 7, 7] map.
+            self.gate = nn.Conv2d(self.feature_dim * 2, 1, kernel_size=1)
+        else:
+            self.gate = None
         if self.gate is not None:
+            # Zero initialisation keeps the initial weight map at exactly 0.5 everywhere.
             nn.init.zeros_(self.gate.weight)
             nn.init.zeros_(self.gate.bias)
 
-    def forward_details(self, image, enhanced=None, gate_override=None):
+    def _layer4_map(self, batch):
+        """Encoder output before global average pooling: [N, feature_dim, 7, 7]."""
+        encoder = self.encoder
+        x = self.preprocess(batch)
+        x = encoder.conv1(x)
+        x = encoder.bn1(x)
+        x = encoder.relu(x)
+        x = encoder.maxpool(x)
+        x = encoder.layer1(x)
+        x = encoder.layer2(x)
+        x = encoder.layer3(x)
+        return encoder.layer4(x)
+
+    def _pool_map(self, maps):
+        if self.pooling == "gap":
+            return maps.mean(dim=(2, 3))
+        return self.encoder.avgpool(maps).flatten(1)
+
+    def _spatial_details(self, image, enhanced, gate_override, spatial_average):
+        if enhanced is None or image.shape != enhanced.shape:
+            raise ValueError("Fusion requires paired views of equal shape")
+        raw_map, enhanced_map = self._layer4_map(torch.cat((image, enhanced))).chunk(2)
+        weight_map = torch.sigmoid(self.gate(torch.cat((raw_map, enhanced_map), dim=1)))
+        if gate_override is not None:
+            value = float(gate_override)
+            if not math.isfinite(value) or not 0 <= value <= 1:
+                raise ValueError("Gate override must be finite and within [0, 1]")
+            weight_map = torch.full_like(weight_map, value)
+        elif spatial_average:
+            # Intervention: replace every position by that image's own mean weight.
+            weight_map = weight_map.mean(dim=(2, 3), keepdim=True).expand_as(weight_map)
+        fused_map = (1 - weight_map) * raw_map + weight_map * enhanced_map
+        features = self._pool_map(fused_map)
+        return {
+            "logits": self.classifier(features),
+            "features": features,
+            "raw_features": self._pool_map(raw_map),
+            "enhanced_features": self._pool_map(enhanced_map),
+            "gate": weight_map.mean(dim=(2, 3)).reshape(len(weight_map), 1),
+            "gate_map": weight_map,
+        }
+
+    def forward_details(self, image, enhanced=None, gate_override=None, spatial_average=False):
+        if self.fusion == "spatial":
+            return self._spatial_details(image, enhanced, gate_override, spatial_average)
         if self.fusion == "single":
             if enhanced is not None or gate_override is not None:
                 raise ValueError("A single branch accepts one view and no gate override")
@@ -167,6 +234,9 @@ def fit_run(run_dir, config, train_views, train_targets, evaluations):
         raise FileExistsError(f"Refusing to overwrite existing run: {run_dir}")
     config = json.loads(json.dumps(config, allow_nan=False))
     _validate_weight_config(config)
+    pooling = config.get("pooling", "gap")
+    if pooling not in POOLING_MODES:
+        raise ValueError(f"Unknown pooling mode: {pooling}")
     mode = config["input"]
     if mode not in INPUT_MODES:
         raise ValueError(f"Unknown input mode: {mode}")
@@ -217,7 +287,8 @@ def fit_run(run_dir, config, train_views, train_targets, evaluations):
             torch.cuda.manual_seed_all(int(config["seed"]))
         batches = torch.Generator().manual_seed(int(config["seed"]))
         model = ResNet18Fusion(
-            INPUT_MODES[mode][0], pretrained=config["pretrained"], weights_path=config["weights_path"]
+            INPUT_MODES[mode][0], pretrained=config["pretrained"], weights_path=config["weights_path"],
+            pooling=pooling,
         ).to(device=device, memory_format=torch.channels_last)
         optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
         criterion = nn.CrossEntropyLoss()

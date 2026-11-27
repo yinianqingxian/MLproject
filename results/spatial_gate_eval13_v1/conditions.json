@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "scope": "development_validation_only",
+  "levels": {
+    "motion": [
+      3,
+      5,
+      7
+    ],
+    "noise": [
+      10,
+      20,
+      30
+    ],
+    "dark": [
+      0.7,
+      0.45,
+      0.25
+    ],
+    "jpeg": [
+      40,
+      20,
+      10
+    ]
+  },
+  "noise_seed": 20261117,
+  "note": "Medium conditions reuse prepare_data pixels; low/high noise derive a per-file seed from the frozen image order so both strengths share one normal field.",
+  "data_fingerprint": "e494bcb968ea8cbaa48c1790f73dcc0a403a8a4be3f16f8740151618f8029eaf",
+  "split_sha256": "de914a9199138474115a14776a61574651653ed87c72a26b9804bb35c5aa5359",
+  "study": "results/spatial_gate_study_v1",
+  "study_config_sha256": "a4a375942ad9695747b15967e41836173c506db4fad3f1715683598a40ca1243",
+  "source_hashes": {
+    "a_conditions.py": "b0c970af0ca0df27107367fc9f16617e1fe0d66b956b838fd41ecb519886c6d8",
+    "evaluate_a13.py": "6d36122d8a4be07fc8a19938ad21179e8f636dbb72bbf2e76506b1d1b52a1c4f"
+  },
+  "conditions": [
+    {
+      "condition": "clean",
+      "severity": "none",
+      "parameter": null,
+      "n_images": 840,
+      "pixel_sha256": "3b71bffa7023767a6838cdb35c24493746d703739ba4b8c91c2dfd139fc7dd61"
+    },
+    {
+      "condition": "motion",
+      "severity": "low",
+      "parameter": 3,
+      "n_images": 840,
+      "pixel_sha256": "030dee053884d8097c27bf142cfee2f7d0ff1fd2ac7f91d0b968fb0e7f8ae0fe"
+    },
+    {
+      "condition": "motion",
+      "severity": "medium",
+      "parameter": 5,
+      "n_images": 840,
+      "pixel_sha256": "aee10a7733023948612b8ab4013b2273f6475bb9376939c591fbd81896d24abc"
+    },
+    {
+      "condition": "motion",
+      "severity": "high",
+      "parameter": 7,
+      "n_images": 840,
+      "pixel_sha256": "aa2666a0ef0679007b0d9c7b891550607829f75d20e0b9714f6262a961527c6b"
+    },
+    {
+      "condition": "noise",
+      "severity": "low",
+      "parameter": 10,
+      "n_images": 840,
+      "pixel_sha256": "ac55064be821bcd6710926607522364be53f2adfb77d0a65dc31decd8b72d71d"
+    },
+    {
+      "condition": "noise",
+      "severity": "medium",
+      "parameter": 20,
+      "n_images": 840,
+      "pixel_sha256": "bfc6b7642fd1e697c8bc6b4a7db6979fee5b90a5fc95473394c14bf02f18ef7a"
+    },
+    {
+      "condition": "noise",
+      "severity": "high",
+      "parameter": 30,
+      "n_images": 840,
+      "pixel_sha256": "ee5bfce7d9d35f6fe61f9ed16f39e5d275a220a6a87f9271b496efebc17e49f4"
+    },
+    {
+      "condition": "dark",
+      "severity": "low",
+      "parameter": 0.7,
+      "n_images": 840,
+      "pixel_sha256": "c8d238316343b2f323cb8db7b1be5a94657204e0e8ccd7a72b82a6f478efd748"
+    },
+    {
+      "condition": "dark",
+      "severity": "medium",
+      "parameter": 0.45,
+      "n_images": 840,
+      "pixel_sha256": "9e45c7960ab0573be7081b9e4c67265f199fa0bc5b7f9f4de167f2e4519e5db1"
+    },
+    {
+      "condition": "dark",
+      "severity": "high",
+      "parameter": 0.25,
+      "n_images": 840,
+      "pixel_sha256": "7c0e0f629789d024321cefc374274015f0d8aa9af1987a719567b397f10bc786"
+    },
+    {
+      "condition": "jpeg",
+      "severity": "low",
+      "parameter": 40,
+      "n_images": 840,
+      "pixel_sha256": "92e968ae189ca9c44905728c7d106ecc7b0a715578cef6468c8e8e48cd0c5338"
+    },
+    {
+      "condition": "jpeg",
+      "severity": "medium",
+      "parameter": 20,
+      "n_images": 840,
+      "pixel_sha256": "c14dcb19df9acbf89a59ccf6a3d4b5874e2f5d19321577603a3a9379057b3a19"
+    },
+    {
+      "condition": "jpeg",
+      "severity": "high",
+      "parameter": 10,
+      "n_images": 840,
+      "pixel_sha256": "9ab8ebdcfd115e7b14d6fcf1fcfc7be09383b14adf9c4301ee703e237f06afa0"
+    }
+  ]
+}

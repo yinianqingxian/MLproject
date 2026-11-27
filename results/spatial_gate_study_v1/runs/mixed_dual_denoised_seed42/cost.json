@@ -1,0 +1,20 @@
+{
+  "device": "cuda",
+  "epoch_validation_seconds": 12.785865100042429,
+  "export_seconds": 31.73327889997745,
+  "inference_seconds": {
+    "train_clean": 4.5439147999859415,
+    "validation_clean": 1.2901018999982625,
+    "validation_dark": 1.2571361000300385,
+    "validation_jpeg": 1.3043432999984361,
+    "validation_motion": 1.2916937000118196,
+    "validation_noise": 1.277970399998594
+  },
+  "inference_timing_method": "paired-view selection, device transfer, forward and CPU output collection; batch size from config; CUDA synchronized",
+  "optimizer_steps": 350,
+  "parameters": 11181128,
+  "threads": 6,
+  "training_entries": 4410,
+  "training_seconds": 470.27503600000637,
+  "training_timing_method": "optimizer epochs excluding epoch validation and export"
+}

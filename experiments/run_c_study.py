@@ -26,7 +26,7 @@ import torch
 import cnn_robustness_pilot as pilot
 
 PROJECT = Path(__file__).resolve().parents[1]
-MODES = ("raw", "clahe", "denoised_clahe", "dual", "fixed", "dual_denoised")
+MODES = ("raw", "clahe", "denoised_clahe", "dual", "fixed", "dual_denoised", "dual_spatial")
 AUGMENTATIONS = ("repeat_clean", "targeted_motion", "mixed")
 
 

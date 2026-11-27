@@ -1,0 +1,14 @@
+condition,severity,changed,corrected_by_spatial,worsened_by_spatial
+clean,none,0,0,0
+motion,low,3,2,1
+motion,medium,3,0,3
+motion,high,5,2,3
+noise,low,6,1,4
+noise,medium,4,2,2
+noise,high,7,0,7
+dark,low,1,0,1
+dark,medium,3,1,1
+dark,high,2,1,1
+jpeg,low,4,2,2
+jpeg,medium,5,2,2
+jpeg,high,6,1,3
