@@ -1,0 +1,10 @@
+﻿run_id,group,seed,input,augmentation,optimizer_steps,training_seconds,preprocessing_seconds
+mixed_denoised_clahe_seed42,S,42,denoised_clahe,mixed,350,236.3,0.0
+mixed_denoised_clahe_seed43,S,43,denoised_clahe,mixed,350,222.3,0.0
+mixed_denoised_clahe_seed44,S,44,denoised_clahe,mixed,350,208.7,0.0
+mixed_dual_denoised_seed42,G,42,dual_denoised,mixed,350,470.3,0.0
+mixed_dual_denoised_seed43,G,43,dual_denoised,mixed,350,421.3,0.0
+mixed_dual_denoised_seed44,G,44,dual_denoised,mixed,350,421.3,0.0
+mixed_dual_spatial_seed42,P,42,dual_spatial,mixed,350,475.4,0.0
+mixed_dual_spatial_seed43,P,43,dual_spatial,mixed,350,422.7,0.0
+mixed_dual_spatial_seed44,P,44,dual_spatial,mixed,350,421.9,0.0
