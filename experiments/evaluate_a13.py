@@ -66,7 +66,8 @@ def _load_run(study, run_id, data_fingerprint):
     checkpoint = torch.load(run / "model.pt", map_location="cpu", weights_only=True)
     if checkpoint.get("config") != config:
         raise ValueError(f"Checkpoint configuration mismatch: {run_id}")
-    model = ResNet18Fusion(INPUT_MODES[config["input"]][0], pretrained=False)
+    model = ResNet18Fusion(INPUT_MODES[config["input"]][0], pretrained=False,
+                           pooling=config.get("pooling", "gap"))
     model.load_state_dict(checkpoint["model_state"], strict=True)
     return run, config, model
 

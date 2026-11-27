@@ -23,6 +23,7 @@ from run_c_study import (
     AUGMENTATIONS, MODES, PROJECT, environment_info, file_sha256, pilot, prepare_data, run_matrix,
 )
 from cnn_robustness_study import INPUT_MODES, tensor_views, verify_completed_run
+from resnet_robustness_study import POOLING_MODES
 
 
 DEFAULT_WEIGHTS_PATH = PROJECT / "assets/weights/resnet18-f37072fd.pth"
@@ -65,6 +66,8 @@ def validate_resnet_config(config):
             raise ValueError(f"Invalid ResNet study {key}")
     if config.get("device") not in ("cpu", "cuda"):
         raise ValueError("Recorded ResNet study device must be cpu or cuda")
+    if config.get("pooling", "gap") not in POOLING_MODES:
+        raise ValueError("Invalid ResNet pooling mode")
     for key in ("weights_path", "torchvision_version", "torchvision_module_path"):
         if not isinstance(config.get(key), str) or not config[key].strip():
             raise ValueError(f"Missing ResNet provenance: {key}")
@@ -139,7 +142,7 @@ def _initialize_study(output_dir, study_config, manifest, split_path, spark_rese
         json.dump(manifest, handle, indent=2)
 
 
-def _load_study(output_dir, matrix, epochs):
+def _load_study(output_dir, matrix, epochs, pooling=None):
     """Read and validate study-wide provenance before verification or resumed training."""
     study = _read_json(output_dir / "run_config.json")
     if not isinstance(study, dict) or set(study) != {"common", "matrix"}:
@@ -147,6 +150,8 @@ def _load_study(output_dir, matrix, epochs):
     validate_resnet_config(study["common"])
     if study["matrix"] != [list(row) for row in matrix] or study["common"]["epochs"] != epochs:
         raise ValueError("Existing study does not match the requested matrix and epochs")
+    if pooling is not None and study["common"].get("pooling", "gap") != pooling:
+        raise ValueError("Existing study uses a different pooling mode")
     if study["common"]["code_fingerprints"] != _code_fingerprints():
         raise ValueError("Study code fingerprints differ from the current source files")
     manifest = _read_json(output_dir / "data_manifest.json")
@@ -194,6 +199,8 @@ def main(argv=None):
     parser.add_argument("--seeds", nargs="+", type=int, default=[42, 43, 44])
     parser.add_argument("--inputs", nargs="+", choices=MODES)
     parser.add_argument("--augmentations", nargs="+", choices=AUGMENTATIONS)
+    parser.add_argument("--pooling", choices=POOLING_MODES,
+                        help="Global pooling (default GAP, or the saved mode on resume)")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--device", choices=("cpu", "cuda", "auto"), default="cpu")
@@ -205,7 +212,7 @@ def main(argv=None):
             parser.error("duplicate inputs or augmentations")
     matrix = run_matrix(args.inputs, args.augmentations, args.seeds)
     if args.verify_only:
-        study, _ = _load_study(args.output_dir, matrix, args.epochs)
+        study, _ = _load_study(args.output_dir, matrix, args.epochs, pooling=args.pooling)
         for augmentation, mode, seed in matrix:
             run_id = f"{augmentation}_{mode}_seed{seed}"
             expected = dict(study["common"], run_id=run_id, seed=seed, input=mode, augmentation=augmentation)
@@ -218,7 +225,9 @@ def main(argv=None):
             raise FileExistsError(f"Output exists; choose a new directory or --resume: {args.output_dir}")
         spark_reserved = _is_spark_reservation(args.output_dir)
         if not spark_reserved:
-            existing_study, existing_manifest = _load_study(args.output_dir, matrix, args.epochs)
+            existing_study, existing_manifest = _load_study(
+                args.output_dir, matrix, args.epochs, pooling=args.pooling
+            )
             # Refuse partial runs before any expensive preparation or potential new writes.
             for augmentation, mode, seed in matrix:
                 run_id = f"{augmentation}_{mode}_seed{seed}"
@@ -231,7 +240,7 @@ def main(argv=None):
         parser.error("CUDA requested but unavailable in this PyTorch installation")
     device = "cuda" if args.device == "auto" and torch.cuda.is_available() else args.device
     device = "cpu" if device == "auto" else device
-    # Importing the model and resolving torchvision happens only for real training.
+    # Resolving torchvision and the pretrained checkpoint happens only for real training.
     from resnet_robustness_study import fit_run, weights_metadata
     metadata = weights_metadata(pretrained=True, weights_path=args.weights_path)
     cv2.setNumThreads(1)
@@ -261,6 +270,10 @@ def main(argv=None):
         "denoising": {"method": "bilateral", "d": 5, "sigmaColor": 25, "sigmaSpace": 2},
         **metadata,
     }
+    pooling = (existing_study["common"].get("pooling", "gap")
+               if existing_study is not None else args.pooling or "gap")
+    if pooling != "gap":
+        common["pooling"] = pooling
     validate_resnet_config(common)
     study_config = {"common": common, "matrix": [list(row) for row in matrix]}
     manifest = {key: data[key] for key in DATA_MANIFEST_KEYS}

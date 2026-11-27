@@ -81,7 +81,7 @@ def main(argv=None):
         if config["input"] != "dual_spatial":
             raise SystemExit(f"{run_id} 不是 dual_spatial 运行")
         checkpoint = torch.load(run_dir / "model.pt", map_location="cpu", weights_only=True)
-        model = ResNet18Fusion("spatial", pretrained=False)
+        model = ResNet18Fusion("spatial", pretrained=False, pooling=config.get("pooling", "gap"))
         model.load_state_dict(checkpoint["model_state"], strict=True)
         model = model.to(args.device, memory_format=torch.channels_last).eval()
 

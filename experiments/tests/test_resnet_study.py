@@ -112,6 +112,38 @@ class ResNetStudyTests(unittest.TestCase):
                              for layer in model.modules()), 1)
         self.assertTrue(all(parameter.requires_grad for parameter in model.encoder.parameters()))
 
+    def test_avgmax_pools_correct_maps_in_single_and_dual_modes(self):
+        raw, enhanced = torch.rand(2, 3, 32, 32), torch.rand(2, 3, 32, 32)
+
+        def avgmax(maps):
+            return 0.5 * (maps.mean(dim=(2, 3)) + maps.amax(dim=(2, 3)))
+
+        for mode in ("single", "learned", "fixed", "spatial"):
+            with self.subTest(mode=mode), torch.inference_mode():
+                model = self.study.ResNet18Fusion(mode, pretrained=False, pooling="avgmax").eval()
+                if mode == "single":
+                    maps = model._layer4_map(raw)
+                    details = model.forward_details(raw)
+                    expected = avgmax(maps)
+                else:
+                    left, right = model._layer4_map(torch.cat((raw, enhanced))).chunk(2)
+                    if mode == "spatial":
+                        # Vary the local gate to distinguish pooling after spatial fusion.
+                        model.gate.weight.normal_(0, 0.05)
+                    details = model.forward_details(raw, enhanced)
+                    torch.testing.assert_close(details["raw_features"], avgmax(left))
+                    torch.testing.assert_close(details["enhanced_features"], avgmax(right))
+                    if mode == "spatial":
+                        weight = details["gate_map"]
+                        self.assertEqual(tuple(weight.shape), (2, 1, 7, 7))
+                        expected = avgmax((1 - weight) * left + weight * right)
+                    else:
+                        expected = torch.lerp(avgmax(left), avgmax(right), details["gate"])
+                torch.testing.assert_close(details["features"], expected)
+                torch.testing.assert_close(details["logits"], model.classifier(expected))
+                self.assertEqual(tuple(details["features"].shape), (2, 512))
+                self.assertEqual(tuple(details["logits"].shape), (2, 7))
+
     def _smoke_inputs(self):
         images = torch.rand(4, 3, 32, 32)
         views = {"raw": images, "clahe": 1 - images, "denoised_clahe": 1 - images}
@@ -188,6 +220,31 @@ class ResNetStudyTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.study.fit_run(run_dir, dict(config, **change), views, torch.arange(4), evaluations)
                 self.assertFalse(run_dir.exists())
+
+    def test_avgmax_checkpoint_reloads_for_development_evaluation(self):
+        from evaluate_a13 import _load_run
+
+        config, views, rows, evaluations = self._smoke_inputs()
+        config["pooling"] = "avgmax"
+        with tempfile.TemporaryDirectory() as temporary:
+            study = Path(temporary)
+            run = study / "runs" / config["run_id"]
+            self.study.fit_run(run, config, views, torch.arange(4), evaluations)
+            _, saved, model = _load_run(study, config["run_id"], config["data_fingerprint"])
+            self.assertEqual(saved["pooling"], "avgmax")
+            self.assertIsInstance(model.encoder.avgpool, self.study.AvgMaxPool2d)
+            order = sorted(range(len(rows)), key=lambda index: rows[index]["image"])
+            with torch.inference_mode():
+                model.eval()
+                details = [
+                    model.forward_details(views["raw"][indices], views["clahe"][indices])
+                    for indices in (order[:2], order[2:])
+                ]
+            with np.load(run / "features" / "validation_clean.npz", allow_pickle=False) as exported:
+                np.testing.assert_allclose(
+                    exported["features"], torch.cat([d["features"] for d in details]).numpy(),
+                    rtol=1e-4, atol=2e-5,
+                )
 
 
 if __name__ == "__main__":

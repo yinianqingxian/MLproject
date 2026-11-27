@@ -48,3 +48,4 @@ bash SPARK.sh report
 - C 的 15 次正式 ResNet18 开发验证实验已在 Windows NVIDIA GeForce RTX 4060 Ti 上跑完并通过核验。 [正式 ResNet18 报告](report/c_part_resnet18_rtx4060ti/C_REPORT.md) · [项目进度](MASTER.md)
 - C 的 15 组正式权重按 A 的十三条件协议补做了开发集推理。 [十三条件报告](report/c_part_eval13_rtx4060ti/C_REPORT.md)
 - C 的模型和特征可用于分组复核与聚类。 [交接说明](handoffs/C_RESNET18_HANDOFF.md) · [单路与双路推理计时](results/c_inference_cost_rtx4060ti_20261123/README.md)
+- 用已导出的 512 维特征直接做七类聚类。 [AvgMax 与聚类教程](CLUSTERING.md)

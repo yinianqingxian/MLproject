@@ -99,9 +99,10 @@ class ResNetProtocolTests(unittest.TestCase):
     def test_rejects_legacy_backbone_and_wrong_preprocessing_or_weights(self):
         common = self.official_common()
         self.runner.validate_resnet_config(common)
+        self.runner.validate_resnet_config(dict(common, pooling="avgmax"))
         for key, value in (("backbone", "SmallCNN"), ("feature_dim", 32),
                            ("network_input_size", 32), ("image_size", 224),
-                           ("pretrained", False), ("weights_id", "DEFAULT"),
+                           ("pretrained", False), ("weights_id", "DEFAULT"), ("pooling", "unknown"),
                            ("weights_sha256", "f37072fd" + "0" * 56)):
             with self.subTest(key=key):
                 changed = dict(common, **{key: value})
