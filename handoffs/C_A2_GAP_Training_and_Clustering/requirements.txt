@@ -1,0 +1,8 @@
+# Versions used for the verified A2 GAP reference environment.
+torch==2.5.1
+torchvision==0.20.1
+numpy==1.26.4
+opencv-python==4.10.0.84
+scikit-learn==1.5.1
+threadpoolctl==3.5.0
+matplotlib==3.9.2
